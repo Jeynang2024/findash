@@ -1,0 +1,7 @@
+/* For brand and nav links */
+.text-gradient {
+  background: linear-gradient(90deg, orange, rgb(181, 6, 181));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
