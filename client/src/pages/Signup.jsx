@@ -34,7 +34,7 @@ function Signup() {
                 console.log("Signup successful:", data);
                 localStorage.setItem("token", data.token); // Store token in localStorage
                 setToken(data.token);
-                navigate("/"); // Redirect to home page on success
+                navigate("/dashboard"); // Redirect to home page on success
                 // Redirect or show success message
             } else {
                 const errorData = await response.json();

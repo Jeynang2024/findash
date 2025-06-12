@@ -33,7 +33,7 @@ function Login(){
                 // Store token or user data as needed
                 localStorage.setItem("token", data.token); // Store token in localStorage
                 setToken(data.token);
-                navigate("/"); // Redirect to home page on success
+                navigate("/dashboard"); // Redirect to home page on success
             } else {
                 const errorData = await response.json();
                 console.error("Login failed:", errorData);
