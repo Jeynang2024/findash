@@ -1,4 +1,6 @@
 /* Ensure the page background is pure dark */
+@import "tailwindcss";
+
 body, html, #root {
   background-color: #121212;
   color: #e0e0e0;
@@ -11,4 +13,23 @@ body, html, #root {
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;
+}
+.apexcharts-tooltip {
+  background-color: #1f2937 !important; /* Tailwind: bg-gray-800 */
+  color: #f1f5f9 !important;           /* Tailwind: text-slate-100 */
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.apexcharts-tooltip-title {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.875rem;
+}
+
+.apexcharts-tooltip-text-label,
+.apexcharts-tooltip-text-value {
+  color: #ffffff !important;
+  font-size: 0.875rem;
 }

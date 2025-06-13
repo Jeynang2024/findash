@@ -9,7 +9,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Footer from './components/Footer';
 import Dashboard from './pages/Dashboard';
-
+import Indicator from './pages/Indicator';
 function App() {
   const [ticker, setTicker] = useState({});
 
@@ -35,7 +35,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Indicator />} />
 
         </Routes>
       </div>
