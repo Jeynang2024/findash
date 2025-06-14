@@ -2,14 +2,17 @@
 
 
 
+// utils/calculateSMA.js or wherever you're defining it
 const calculateSMA = (data, period) => {
-  const sma = [];
+  const sma = new Array(period - 1).fill(null); // placeholders for alignment
   for (let i = period - 1; i < data.length; i++) {
-    const sum = data.slice(i - period + 1, i + 1).reduce((a, b) => a + b.close, 0);
-    sma.push({ x: data[i].time, y: sum / period });
+    const slice = data.slice(i - period + 1, i + 1);
+    const sum = slice.reduce((acc, val) => acc + val, 0);
+    sma.push(sum / period);
   }
   return sma;
 };
+
 
 const calculateEMA = (data, period) => {
   const k = 2 / (period + 1);

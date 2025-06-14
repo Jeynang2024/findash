@@ -29,6 +29,7 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
     yaxis: [
       {
         seriesName: initialSymbol,
+        type:'linear',
         labels: { style: { colors: '#94A3B8' } },
 
         tooltip: { enabled: true ,
@@ -65,7 +66,24 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
   const [selectedIndicator, setSelectedIndicator] = useState("none");
   const [indicatorPeriod, setIndicatorPeriod] = useState(14);
   const [rawData, setRawData] = useState([]);
+const resetChart = () => {
+    setSeries([]); // clear all series immediately
 
+  setOptions(prev => ({
+    ...prev,
+    yaxis: [
+      {
+        seriesName: symbol,
+        tooltip: { enabled: true },
+        title: { 
+          text: "Price",
+          style: { color: '#FACC15', fontSize: '14px', fontWeight: 'bold' }
+        },
+        labels: { style: { colors: '#94A3B8' } }
+      }
+    ]
+  }));
+};
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -91,7 +109,8 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
             parseFloat(candle.close)
           ]
         }))
-      }];
+      }
+    ];
       
       setSeries(candleSeries);
       setOptions(prev => ({
@@ -106,67 +125,158 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
     }
   };
 
-  const applyIndicator = () => {
-    if (selectedIndicator === "none" || rawData.length === 0) {
-      setSeries([series[0]]);
-      return;
-    }
-
-    const baseSeries = series[0];
-    let indicatorSeries = [];
-
-    switch(selectedIndicator) {
-      case "sma":
-        indicatorSeries = {
-          name: `SMA ${indicatorPeriod}`,
-          type: 'line',
-          data: calculateSMA(rawData, indicatorPeriod)
-        };
-        break;
-      case "ema":
-        indicatorSeries = {
-          name: `EMA ${indicatorPeriod}`,
-          type: 'line',
-          data: calculateEMA(rawData, indicatorPeriod)
-        };
-        break;
-      case "rsi":
-        indicatorSeries = {
-          name: `RSI ${indicatorPeriod}`,
-          type: 'line',
-          data: calculateRSI(rawData, indicatorPeriod)
-        };
-        // Add RSI-specific yaxis configuration
-        setOptions(prev => ({
-          ...prev,
-          yaxis: [
-            { ...prev.yaxis, tooltip: { enabled: true } },
-            {
-              seriesName: `RSI ${indicatorPeriod}`,
-              opposite: true,
-              min: 0,
-              max: 100,
-              tooltip: { enabled: true }
-            }
-          ]
-        }));
-        break;
-      case "macd":
-       const { macdLine, signalLine, histogram } = calculateMACD(rawData);
-      
-      return setSeries([
-        baseSeries,
-       { name: 'MACD Line', type: 'line', data: macdLine, yAxisIndex: 1 },
-        { name: 'Signal Line', type: 'line', data: signalLine, yAxisIndex: 1 },
-        { name: 'Histogram', type: 'column', data: histogram, yAxisIndex: 1 }
-     
-        ]);
-      default:
-        break;
-    }
-
-    setSeries([baseSeries, indicatorSeries]);
+const applyIndicator = () => {
+  // Always start with clean base series
+  const baseSeries = {
+    name: symbol,
+    type: 'candlestick',
+    data: rawData.map(candle => ({
+      x: new Date(candle.time),
+      y: [
+        parseFloat(candle.open),
+        parseFloat(candle.high),
+        parseFloat(candle.low),
+        parseFloat(candle.close)
+      ]
+    }))
   };
+
+  // Reset to default options
+  const resetOptions = {
+    ...options,
+    yaxis: [
+      {
+        seriesName: symbol,
+        tooltip: { enabled: true },
+        title: { 
+          text: "Price",
+          style: { color: '#FACC15', fontSize: '14px', fontWeight: 'bold' }
+        },
+        labels: { style: { colors: '#94A3B8' } }
+      }
+    ]
+  };
+
+  if (selectedIndicator === "none" || rawData.length === 0) {
+    setOptions(resetOptions);
+    setSeries([baseSeries]);
+    return;
+  }
+
+  let newSeries = [baseSeries];
+  let newOptions = { ...resetOptions };
+
+  switch(selectedIndicator) {
+    case "sma":
+    case "ema":
+      const calculateFn = selectedIndicator === "sma" ? calculateSMA : calculateEMA;
+      const indicatorData = calculateFn(rawData, indicatorPeriod);
+      
+      // Ensure data alignment
+      const alignedData = rawData.slice(rawData.length - indicatorData.length)
+        .map((candle, i) => ({
+          x: new Date(candle.time),
+          y: indicatorData[i].y
+        }));
+      
+      newSeries.push({
+        name: `${selectedIndicator.toUpperCase()} ${indicatorPeriod}`,
+        type: 'line',
+        data: alignedData,
+          yAxisIndex: 1  // 👈 Important
+
+      });
+      break;
+
+    case "rsi":
+      const rsiData = calculateRSI(rawData, indicatorPeriod);
+      const alignedRsiData = rawData.slice(rawData.length - rsiData.length)
+        .map((candle, i) => ({
+          x: new Date(candle.time),
+          y: rsiData[i].y
+        }));
+      
+      newSeries.push({
+        name: `RSI ${indicatorPeriod}`,
+        type: 'line',
+        data: alignedRsiData
+      });
+      
+      newOptions.yaxis = [
+        newOptions.yaxis[0],
+        {
+          seriesName: `RSI ${indicatorPeriod}`,
+          opposite: true,
+          min: 0,
+          max: 100,
+          tooltip: { enabled: true },
+          labels: { style: { colors: '#94A3B8' } }
+        }
+      ];
+      break;
+
+    case "macd":
+      const { macdLine, signalLine, histogram } = calculateMACD(rawData);
+      
+      // Align MACD data with candles
+      const alignedMacdData = rawData.slice(rawData.length - macdLine.length)
+        .map((candle, i) => ({
+          x: new Date(candle.time),
+          y: macdLine[i].y
+        }));
+      
+      newSeries.push(
+        { name: 'MACD Line', type: 'line', data: alignedMacdData, yAxisIndex: 1 },
+        { name: 'Signal Line', type: 'line', data: signalLine, yAxisIndex: 1 },
+        { name: 'Histogram', type: 'column', data: histogram , yAxisIndex: 1}
+      );
+      
+      newOptions.yaxis = [
+        newOptions.yaxis[0],
+        {
+          seriesName: "MACD",
+          opposite: true,
+          labels: { 
+            formatter: (val) => val.toFixed(2), 
+            style: { colors: '#94A3B8' } 
+          },
+          title: { text: "MACD" }
+        }
+      ];
+      break;
+  }
+
+  setOptions(newOptions);
+  const cleanSeries = newSeries.map(s => ({
+  ...s,
+  data: s.data.filter(point => point !== undefined && point !== null)
+}));
+console.log("🔍 Validating series data before rendering:");
+const validatedSeries = newSeries.filter(s => 
+  Array.isArray(s.data) &&
+  s.data.length > 0 &&
+  s.data.every(point => point && point.x && point.y !== undefined)
+);
+
+console.log("✅ Validated Series", validatedSeries);
+
+if (validatedSeries.length === 0) {
+  console.warn("⚠️ No valid series found, skipping chart render.");
+  return;
+}
+
+validatedSeries.forEach((s, idx) => {
+  console.log(`🔍 Series ${idx} - ${s.name}:`, s.data.slice(0, 5));
+});
+
+
+setSeries(validatedSeries);
+
+
+};
+
+
+
 
   useEffect(() => {
     fetchData();
@@ -256,8 +366,7 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
               <Chart 
                 options={options} 
                 series={series} 
-                type="candlestick"
-                height={500} 
+                type={series[0]?.type || 'line'}
                 width="100%" 
               />
             </div>
