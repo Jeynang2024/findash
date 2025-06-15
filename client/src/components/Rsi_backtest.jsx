@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
-
+import "../styles/header.css";
 const fetchKlines = async (symbol = 'BTCUSDT', interval = '1h', limit = 500) => {
   const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`);
   const data = await res.json();
@@ -80,7 +80,7 @@ const RSIChart = () => {
     chart: {
       type: 'line',
       height: 350,
-      background: '#1e293b',
+      background: '#1e1b2e',
       foreColor: '#f1f5f9',
       toolbar: {
         show: true,
@@ -173,22 +173,30 @@ const RSIChart = () => {
   }];
 
   return (
-    <div className="p-4 bg-slate-900 text-white min-h-screen">
-      <h2 className="text-xl font-semibold mb-4">RSI Chart</h2>
+    <div className="p-4  gradient-border text-white ">
+      <h2 className="text-xl font-semibold mb-4 text-gradient">RSI Chart</h2>
 
       <div className="flex flex-wrap gap-4 mb-4">
-        <select 
-          className="p-2 bg-slate-800 rounded border border-slate-700"
+         <div className="flex-1 min-w-[120px]">
+
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Symbol</label>
+
+        <input
+                style={{ backgroundColor: '#1e1b2e	' }} 
+
+          className="p-2 w-full bg-slate-800 rounded border border-slate-700"
+          placeholder="Symbol (e.g. BTCUSDT)"
           value={symbol}
-          onChange={e => setSymbol(e.target.value)}
-        >
-          <option value="BTCUSDT">BTC/USDT</option>
-          <option value="ETHUSDT">ETH/USDT</option>
-          <option value="SOLUSDT">SOL/USDT</option>
-        </select>
-        
+          onChange={e => setSymbol(e.target.value.toUpperCase())}
+        /></div>
+        <div className="flex-1 min-w-[120px]">
+
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Interval</label>
+
         <select 
-          className="p-2 bg-slate-800 rounded border border-slate-700"
+                style={{ backgroundColor: '#1e1b2e	' }} 
+
+          className="p-2 w-full bg-slate-800 rounded border border-slate-700"
           value={interval}
           onChange={e => setInterval(e.target.value)}
         >
@@ -199,31 +207,50 @@ const RSIChart = () => {
           <option value="4h">4 Hours</option>
           <option value="1d">1 Day</option>
         </select>
-        
+        </div>
+        <div className="flex-1 min-w-[120px]">
+
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Rsi Period</label>
+
         <input 
+                style={{ backgroundColor: '#1e1b2e	' }} 
+
           type="number" 
-          className="p-2 bg-slate-800 rounded border border-slate-700 w-24"
+          className="p-2 w-full bg-slate-800 rounded border border-slate-700 w-24"
           value={period} 
           onChange={e => setPeriod(+e.target.value)} 
           placeholder="RSI Period" 
         />
-        
+        </div>
+        <div className="flex-1 min-w-[120px]">
+
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Overbrought</label>
+
         <input 
+                style={{ backgroundColor: '#1e1b2e	' }} 
+
           type="number" 
-          className="p-2 bg-slate-800 rounded border border-slate-700 w-32"
+          className="p-2 w-full bg-slate-800 rounded border border-slate-700 w-32"
           value={overbought} 
           onChange={e => setOverbought(+e.target.value)} 
           placeholder="Overbought" 
         />
-        
+        </div>
+        <div className="flex-1 min-w-[120px]">
+
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Oversold</label>
+
         <input 
+                        style={{ backgroundColor: '#1e1b2e	' }} 
+
           type="number" 
-          className="p-2 bg-slate-800 rounded border border-slate-700 w-32"
+          className="p-2 w-full bg-slate-800 rounded border border-slate-700 w-32"
           value={oversold} 
           onChange={e => setOversold(+e.target.value)} 
           placeholder="Oversold" 
         />
-        
+        </div>
+        <div className="flex-1 min-w-[120px] flex items-end">
         <button 
           className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800"
           onClick={loadData}
@@ -231,6 +258,7 @@ const RSIChart = () => {
         >
           {loading ? 'Loading...' : 'Refresh'}
         </button>
+        </div>
       </div>
 
       {loading ? (

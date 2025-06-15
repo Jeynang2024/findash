@@ -59,24 +59,25 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
 
   return (
     
-    <div className="min-h-screen bg-slate-900 text-slate-100 p-4">
+    <div className="min-h-screen  text-slate-100 p-4">
      {/* <div className="flex flex-col ">
         <div className="w-full lg:w-1/4 bg-slate-800 rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-4 text-emerald-400">Market Prices</h2>
           <Dashboard />
         </div>*/}
-        <div className="w-full bg-slate-800 rounded-lg pt-4 ">
-          <div className="flex flex-wrap gap-3 mb-4">
-            <input type="text" value={symbol} onChange={(e) => setSymbol(e.target.value.toUpperCase())} className="p-2 bg-slate-700 rounded text-slate-100" />
-            <input type="text" value={interval} onChange={(e) => setInterval(e.target.value)} className="p-2 bg-slate-700 rounded text-slate-100" />
-            <select value={selectedIndicator} onChange={(e) => setSelectedIndicator(e.target.value)} className="p-2 bg-slate-700 rounded text-slate-100">
+        <div className="w-full  rounded-lg pt-4 ">
+          <div className="flex flex-wrap gap-3 mb-4 p-2">
+            <input type="text" value={symbol} onChange={(e) => setSymbol(e.target.value.toUpperCase())} className="p-2 bg-slate-700 rounded text-slate-100"   style={{ backgroundColor: 'rgba(163, 121, 226, 0.3)	' }} 
+/>
+            <input style={{ backgroundColor: 'rgba(163, 121, 226, 0.3)	' }} type="text" value={interval} onChange={(e) => setInterval(e.target.value)} className="p-2 bg-slate-700 rounded text-slate-100" />
+            <select style={{ backgroundColor: 'rgba(163, 121, 226, 0.3)	' }} value={selectedIndicator} onChange={(e) => setSelectedIndicator(e.target.value)} className="p-2 bg-slate-700 rounded text-slate-100">
               <option value="sma">SMA</option>
               <option value="ema">EMA</option>
               <option value="rsi">RSI</option>
               <option value="macd">MACD</option>
             </select>
             {selectedIndicator !== "macd" && selectedIndicator !== "none" && (
-              <input type="number" value={indicatorPeriod} onChange={(e) => setIndicatorPeriod(parseInt(e.target.value))} className="p-2 w-20 bg-slate-700 rounded text-slate-100" />
+              <input style={{ backgroundColor: 'rgba(163, 121, 226, 0.3)	' }} type="number" value={indicatorPeriod} onChange={(e) => setIndicatorPeriod(parseInt(e.target.value))} className="p-2 w-20 bg-slate-700 rounded text-slate-100" />
             )}
             <button onClick={fetchData} className="bg-emerald-600 px-4 py-2 rounded text-white">{loading ? "Loading..." : "Refresh"}</button>
           </div>
@@ -92,7 +93,7 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
         }]} options={ {
   chart: {
     type: "candlestick",
-    background: "#1e293b",
+    background: "rgba(68, 50, 94, 0.3)	",
     toolbar: { show: true }
   },
   xaxis: {

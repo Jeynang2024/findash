@@ -4,15 +4,19 @@ import cors from 'cors';
 import fetch from 'node-fetch';
 import authorizationRoutes from './routes/auth.js'; // Adjust the path as necessary
 import Binance from 'binance-api-node'; // Import the default export
+import passport from './routes/middleware/passportconfig.js';
 const app = express();
+app.use(express.json()); 
 app.use(cors({
   origin: 'http://localhost:5173',  // React dev server origin
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
 }));
-
+app.use(passport.initialize()); // Initialize Passport for authentication
 // 2. Explicitly handle OPTIONS pre-flight requests (if needed)
 app.options('/{*splat}', cors());
+app.use('/api/auth', authorizationRoutes); // Use the auth routes
+
 
 //const API_KEY ="6fvqCgvHOvSF1F6LboI18hO4qj5bGTjAnzxWhW2Jwv6PCx0KnJEPXe5kbiFTYoDu"
 //const API_SECRET ="uruxesHtN7SJOrfAeQU4xx5PTPsAcQR0EJAPQTQhB8y4pcQFuS9z5gEKOZUvZ6RR"
@@ -66,7 +70,6 @@ app.get('/api/btc-rates', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch conversion rates' });
   }
 });
-app.use(express.json()); // Middleware to parse JSON bodies
-app.use('/api/auth', authorizationRoutes); // Use the auth routes
+// Middleware to parse JSON bodies
 
 app.listen(5001, () => console.log('Listening on port 5001'));

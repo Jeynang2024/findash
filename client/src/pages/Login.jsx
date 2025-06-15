@@ -47,7 +47,7 @@ function Login(){
 
 
     return (
-        <div className="container mt-4">
+        <div className="container mt-4" style={{ backgroundColor: "rgba(64, 50, 84, 0.3)" }}>
             <h2>Login</h2>
             <form onSubmit={handleSubmit} >
                 <div className="mb-3">

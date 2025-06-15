@@ -51,7 +51,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="home-container">
+    <div className="home-container" style={{backgroundColor: "rgba(73, 56, 97, 0.3)"}}>
       <h2 className="gradient-text">Live Bitcoin Dashboard</h2>
 
       <div className="tables">

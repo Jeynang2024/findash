@@ -26,7 +26,7 @@
 .home-table {
   width: 100%;
   border-collapse: collapse;
-  background: #242424;
+      background: rgba(73, 47, 111, 0.3);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -34,11 +34,11 @@
 .home-table th, .home-table td {
   padding: 0.75rem;
   text-align: center;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #7b6c87;
 }
 
 .home-table th {
-  background: #2a2a2a;
+  background: #512c70;
 }
 
 .home-table tr:last-child td {

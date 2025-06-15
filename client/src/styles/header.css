@@ -5,3 +5,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+.gradient-border {
+  border: 4px solid #1e1b2e	;
+  border-radius: 12px; /* Optional for rounded corners */
+}

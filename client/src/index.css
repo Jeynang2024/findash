@@ -9,6 +9,11 @@ body, html, #root {
   min-height: 100%;
   font-family: Arial, sans-serif;
 }
+.container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .wrapper {
   display: grid;
   grid-template-rows: auto 1fr auto;

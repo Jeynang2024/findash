@@ -35,7 +35,7 @@ if (onBalancesUpdate) {
  const chartOptions = {
   chart: {
     type: 'bar',
-    foreColor: '#CBD5E1',
+    foreColor: 'rgba(120, 21, 169, 0)',
     toolbar: {
       show: true,
       tools: {
@@ -54,7 +54,8 @@ if (onBalancesUpdate) {
       }
     },
     // Force dark theme
-    background: '#0F172A',
+        background: "rgba(68, 50, 94, 0.3)",
+
     animations: {
       enabled: true,
       easing: 'easeinout',
@@ -66,10 +67,20 @@ if (onBalancesUpdate) {
     mode: 'dark' // This is crucial for the toolbar
   },
   // Add these styles for the toolbar
-  colors: ['#3b82f6'],
+  colors: ['rgba(149, 72, 188, 0.8)'],
   stroke: {
     colors: ['#0F172A']
-  }
+  },
+   xaxis: {
+    type: 'category',
+    categories: balances.map(b => b.asset),
+    labels: {
+      style: {
+        colors: '#CBD5E1',
+        fontSize: '12px',
+      }
+    }
+  },
 };
   const chartSeries = [{
     name: 'Balance',
@@ -77,7 +88,7 @@ if (onBalancesUpdate) {
   }];
 
   return (
-    <div className="bg-slate-800 p-4 rounded-xl">
+    <div className=" p-4 rounded-xl">
       <Chart options={chartOptions} series={chartSeries} type="bar" height={300} />
     </div>
   );

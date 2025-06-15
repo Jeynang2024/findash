@@ -24,7 +24,7 @@ const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
     chart: {
       type: "line",
       height: 250,
-      background: "#1e293b",
+      background: "rgba(68, 50, 94, 0.3)",
       toolbar: { show: false }
     },
     theme: { mode: "dark" },

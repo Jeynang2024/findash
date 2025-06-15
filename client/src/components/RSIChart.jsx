@@ -21,6 +21,8 @@ const RSIChart = ({ rawData, calculateRSI, period = 14 }) => {
     chart: {
       height: 300,
       type: "line",
+      background: "rgba(68, 50, 94, 0.3)",
+
       toolbar: { show: true }
     },
     xaxis: {

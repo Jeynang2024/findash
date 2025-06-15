@@ -52,7 +52,8 @@ function Signup() {
 
 
     return (
-        <div className="container">
+        <div className="container" style={{ backgroundColor: "rgba(64, 50, 84, 0.3)" }}>
+            
         <h1>Sign Up</h1>
         <form onSubmit={handleSubmit}>
             <div className="mb-3">

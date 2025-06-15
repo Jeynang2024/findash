@@ -6,7 +6,7 @@ const Sidebar = () => {
 
   return (
     <>
-        <button onClick={() => setOpen(!open)} className="text-white text-2xl">☰</button>
+    <button onClick={() => setOpen(!open)} className="text-white text-2xl">☰</button>
       
       <div className={`fixed top-0 left-0 h-full w-64 bg-gray-800 text-white transition-transform duration-300 z-50 ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         <div className="p-6 font-bold text-xl border-b border-gray-700">Crypto Dashboard</div>

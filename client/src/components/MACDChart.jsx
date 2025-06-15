@@ -11,9 +11,19 @@ const MACDChart = ({ rawData, calculateMACD }) => {
   ];
 
   const options = {
-    chart: { type: "line", background: "#1e293b", toolbar: { show: true } },
+    chart: { type: "line",       background: "rgba(68, 50, 94, 0.3)"
+, toolbar: { show: true } },
+
+legend: {
+      labels: {
+        colors: "rgba(218, 207, 207, 1)", // light yellow legend text
+      },
+    },
     xaxis: { type: "datetime", labels: { style: { colors: "#94A3B8" } } },
-    
+    stroke: {
+      curve: "smooth",
+      width: 2
+    },
     yaxis: [
       {  labels: {
     style: { colors: "#CBD5E1" },
@@ -21,7 +31,7 @@ const MACDChart = ({ rawData, calculateMACD }) => {
   } },
       {
         opposite: true,
-        title: { text: "MACD",style: { color: "#CBD5E1" } },
+        title: { text: "MACD",style: { color: "rgba(184, 175, 175, 0)" } },
  labels: {
     style: { colors: "#CBD5E1" },
     formatter: (value) => value.toFixed(2)  // Show only 2 decimals
@@ -29,7 +39,7 @@ const MACDChart = ({ rawData, calculateMACD }) => {
     ]
   };
 
-  return <Chart options={options} series={series} type="line"  height={200}/>;
+  return <Chart options={options} series={series} type="line"  height={250}/>;
 };
 
 export default MACDChart;

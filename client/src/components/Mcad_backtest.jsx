@@ -124,7 +124,7 @@ const MACDChart = () => {
       id: 'macd-chart',
       type: 'line',
       height: 400,
-      background: '#1e293b',
+      background: '#1e1b2e',
       foreColor: '#f1f5f9',
       toolbar: {
         show: true,
@@ -207,13 +207,15 @@ const MACDChart = () => {
   };
 
   return (
-    <div className="p-4 bg-slate-900 text-white min-h-screen">
-      <h2 className="text-xl font-semibold mb-4">MACD Chart</h2>
+    <div className="p-4 gradient-border text-white ">
+      <h2 className="text-xl font-semibold mb-4 text-gradient">MACD Chart</h2>
 
       <div className="flex flex-wrap gap-4 mb-4 items-end">
         <div className="flex-1 min-w-[120px]">
           <label className="block text-sm text-gray-400 mb-1">Symbol</label>
           <input 
+                  style={{ backgroundColor: '#1e1b2e	' }} 
+
             className="w-full p-2 bg-slate-800 rounded border border-slate-700" 
             value={symbol} 
             onChange={e => setSymbol(e.target.value.toUpperCase())} 
@@ -223,6 +225,8 @@ const MACDChart = () => {
         <div className="flex-1 min-w-[120px]">
           <label className="block text-sm text-gray-400 mb-1">Interval</label>
           <select
+                  style={{ backgroundColor: '#1e1b2e	' }} 
+
             className="w-full p-2 bg-slate-800 rounded border border-slate-700"
             value={interval}
             onChange={e => setInterval(e.target.value)}
@@ -239,6 +243,8 @@ const MACDChart = () => {
         <div className="flex-1 min-w-[120px]">
           <label className="block text-sm text-gray-400 mb-1">Fast Period</label>
           <input 
+                  style={{ backgroundColor: '#1e1b2e	' }} 
+
             type="number" 
             min="1"
             className="w-full p-2 bg-slate-800 rounded border border-slate-700" 
@@ -250,6 +256,8 @@ const MACDChart = () => {
         <div className="flex-1 min-w-[120px]">
           <label className="block text-sm text-gray-400 mb-1">Slow Period</label>
           <input 
+                  style={{ backgroundColor: '#1e1b2e	' }} 
+
             type="number" 
             min={fastPeriod + 1}
             className="w-full p-2 bg-slate-800 rounded border border-slate-700" 
@@ -261,6 +269,8 @@ const MACDChart = () => {
         <div className="flex-1 min-w-[120px]">
           <label className="block text-sm text-gray-400 mb-1">Signal Period</label>
           <input 
+                  style={{ backgroundColor: '#1e1b2e	' }} 
+
             type="number" 
             min="1"
             className="w-full p-2 bg-slate-800 rounded border border-slate-700" 

@@ -1,4 +1,6 @@
 /* Ensure the page background is pure dark */
+@import "tailwindcss";
+
 body, html, #root {
   background-color: #121212;
   color: #e0e0e0;
@@ -7,8 +9,15 @@ body, html, #root {
   min-height: 100%;
   font-family: Arial, sans-serif;
 }
-.wrapper {
+.wrapper{
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;
+  padding-left: 0 !important;
+  width: 100% !important;
+}
+.container {
+  padding-left: 0;
+  padding-right: 0;
+  width: 100% !important;
 }

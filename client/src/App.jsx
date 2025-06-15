@@ -13,6 +13,8 @@ import Indicator from './pages/Indicator';
 import Chartboard from './pages/Chartboard';
 import Historical from "./components/buy_sell_sma"
 import BacktestDashboard from './pages/Backtest';
+import ProtectedRoute from './components/ProtectedRoute';
+import './App.css';
 function App() {
   const [ticker, setTicker] = useState({});
 
@@ -32,17 +34,17 @@ function App() {
   return (
      < div className="wrapper">
       <Header />
-      <div className="container mt-4 ">
+      <div className="container mt-2 ">
         <Routes>
-          <Route path="/" element={<Historical />} />
+          <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
         <Route
           path="/login"
           element={ <Login />}
         />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Indicator />} />
-          <Route path="/backtest" element={<BacktestDashboard />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Indicator /></ProtectedRoute>} />
+          <Route path="/backtest" element={<ProtectedRoute><BacktestDashboard /></ProtectedRoute>} />
 
         </Routes>
       </div>

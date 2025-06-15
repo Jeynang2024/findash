@@ -2,6 +2,10 @@ import express from 'express';
 import pool from "../db.js"; // Adjust the path as necessary
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import passport from './middleware/passportconfig.js';
+ // Adjust the path as necessary
+import dotenv from 'dotenv';
+dotenv.config();
 const router = express.Router();
 
 router.post("/signup",async (req, res) => {
@@ -51,5 +55,12 @@ router.post("/login", async (req, res) => {
         console.error("Error during login:", error);
         res.status(500).json({ error: "Internal server error" });
     }
+});
+
+router.get('/dashboard', passport.authenticate("jwt",{session:false}), (req, res) => {
+  res.json({ message: 'This is a protected route', user: req.user });
+});
+router.get('/backtest', passport.authenticate("jwt",{session:false}), (req, res) => {
+  res.json({ message: 'This is a protected route', user: req.user });
 });
 export default router;

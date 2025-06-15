@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
-
+import "../styles/header.css";
 const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime) => {
   const params = new URLSearchParams({ symbol, interval, limit: limit.toString() });
   if (startTime) params.append('startTime', startTime.toString());
@@ -73,7 +73,7 @@ const ApexBacktestChart = () => {
     chart: { 
       type: 'candlestick', 
       height: 350, 
-      background: '#1e293b', 
+      background: '#1e1b2e', 
       foreColor: '#f1f5f9',
       animations: {
         enabled: true,
@@ -109,18 +109,28 @@ const ApexBacktestChart = () => {
   const series = [{ data: candles }];
 
   return (
-    <div className="p-4 bg-slate-900 text-white min-h-screen">
-      <h2 className="text-xl font-semibold mb-4">Backtest SMA Strategy</h2>
+    <div className="p-4 gradient-border text-white ">
+      <h2 className="text-xl font-semibold mb-4 text-gradient">Backtest SMA Strategy</h2>
 
       <div className="flex flex-wrap gap-4 mb-6">
+               <div className="flex-1 min-w-[120px]">
+
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Symbol</label>
+
         <input
-          className="p-2 bg-slate-800 rounded border border-slate-700"
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
           placeholder="Symbol (e.g. BTCUSDT)"
           value={symbol}
           onChange={e => setSymbol(e.target.value.toUpperCase())}
-        />
+        /></div>
+               <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Interval</label>
+
         <select
-          className="p-2 bg-slate-800 rounded border border-slate-700"
+  style={{ backgroundColor: '#1e1b2e	' }} // ✅ React inline style (correct syntax)
+          className="p-2 w-full bg-slate-800 rounded border border-slate-700"
           value={interval}
           onChange={e => setInterval(e.target.value)}
         >
@@ -131,22 +141,36 @@ const ApexBacktestChart = () => {
           <option value="4h">4 Hours</option>
           <option value="1d">1 Day</option>
         </select>
+        </div>
+               <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Short sma</label>
+
         <input
-          className="p-2 bg-slate-800 rounded border border-slate-700"
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
           type="number"
           placeholder="Short SMA"
           value={shortSMA}
           onChange={e => setShortSMA(Math.max(1, Number(e.target.value)))}
           min="1"
-        />
+        /></div>
+        <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Long sma</label>
+
         <input
-          className="p-2 bg-slate-800 rounded border border-slate-700"
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
           type="number"
           placeholder="Long SMA"
           value={longSMA}
           onChange={e => setLongSMA(Math.max(shortSMA + 1, Number(e.target.value)))}
           min={shortSMA + 1}
         />
+        </div>
+                        <div className="flex-1 min-w-[120px] flex items-end">
+
         <button
           className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800"
           onClick={loadData}
@@ -154,6 +178,7 @@ const ApexBacktestChart = () => {
         >
           {loading ? 'Loading...' : 'Load Chart'}
         </button>
+        </div>
       </div>
 
       {loading ? (
@@ -161,7 +186,7 @@ const ApexBacktestChart = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
       ) : candles.length > 0 ? (
-        <Chart options={options} series={series} type="candlestick" height={350} />
+        <Chart options={options} series={series} type="candlestick" height={450} />
       ) : (
         <div className="bg-slate-800 p-8 rounded-lg text-center">
           <p>No data available. Try adjusting your parameters.</p>

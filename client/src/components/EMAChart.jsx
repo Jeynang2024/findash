@@ -22,6 +22,8 @@ const EMAChart = ({ rawData, calculateEMA, period = 14 }) => {
     chart: {
       height: 550,
       type: "line",
+            background: "rgba(68, 50, 94, 0.3)",
+
       toolbar: { show: true }
     },
     xaxis: {
@@ -46,7 +48,7 @@ const EMAChart = ({ rawData, calculateEMA, period = 14 }) => {
     ]
   };
 
-  return <Chart options={options} series={series} type="line" height={100} width="100%" />;
+  return <Chart options={options} series={series} type="line" height={250} width="100%" />;
 };
 
 export default EMAChart;

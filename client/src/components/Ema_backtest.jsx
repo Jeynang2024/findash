@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
-
+import "../styles/header.css";
 const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime) => {
   const params = new URLSearchParams({ symbol, interval, limit: limit.toString() });
   if (startTime) params.append('startTime', startTime.toString());
@@ -92,7 +92,7 @@ const EMAChart = () => {
     chart: { 
       type: 'candlestick', 
       height: 350, 
-      background: '#1e293b', 
+      background: '#1e1b2e', 
       foreColor: '#f1f5f9'
     },
     plotOptions: {
@@ -123,22 +123,26 @@ const EMAChart = () => {
   const series = [{ data: candles }];
 
   return (
-    <div className="p-4 bg-slate-900 text-white min-h-screen">
-      <h2 className="text-xl font-semibold mb-4">Backtest EMA Strategy</h2>
+    <div className="p-4 gradient-border text-white ">
+      <h2 className="text-xl font-semibold mb-4 text-gradient">Backtest EMA Strategy</h2>
 
       <div className="flex flex-wrap gap-4 mb-6">
        <div className="flex-1 min-w-[120px]">
-          <label className="block text-sm text-gray-400 mb-1">Symbol</label>
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Symbol</label>
           <input 
-            className="w-full p-2 bg-slate-800 rounded border border-slate-700" 
+                          style={{ backgroundColor: '#1e1b2e	' }} 
+
+            className="w-full h-[40px] p-2 bg-slate-800 rounded border border-slate-700" 
             value={symbol} 
             onChange={e => setSymbol(e.target.value.toUpperCase())} 
           />
         </div>
         <div className="flex-1 min-w-[120px]">
-          <label className="block text-sm text-gray-400 mb-1">Interval</label>
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Interval</label>
           <select
-            className="w-full p-2 bg-slate-800 rounded border border-slate-700"
+            style={{ backgroundColor: '#1e1b2e	' }} // ✅ React inline style (correct syntax)
+
+            className="w-full h-[40px]  p-2 bg-slate-800 rounded border border-slate-700"
             value={interval}
             onChange={e => setInterval(e.target.value)}
           >
@@ -150,27 +154,42 @@ const EMAChart = () => {
             <option value="1d">1 Day</option>
           </select>
         </div>
+        <div className="flex-1 min-w-[120px]">
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Short ema</label>
+
         <input
-          className="p-2 bg-slate-800 rounded"
+                        style={{ backgroundColor: '#1e1b2e	' }} 
+
+          className="w-full h-[40px]  p-2 bg-slate-800 rounded border border-slate-700"
           type="number"
           placeholder="Short EMA"
           value={shortEMA}
           onChange={e => setShortEMA(Number(e.target.value))}
         />
+        </div>
+        <div className="flex-1 min-w-[120px]">
+          <label className="block h-[40px] text-sm text-gray-400 mb-1">Long ema</label>
+
         <input
-          className="p-2 bg-slate-800 rounded"
+                        style={{ backgroundColor: '#1e1b2e	' }} 
+
+          className="w-full h-[40px]  p-2 bg-slate-800 rounded border border-slate-700"
           type="number"
           placeholder="Long EMA"
           value={longEMA}
           onChange={e => setLongEMA(Number(e.target.value))}
         />
+        </div>
+                <div className="flex-1 min-w-[120px] flex items-end">
         <button
-          className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800"
+          className="bg-blue-600 h-[40px]  px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800 flex items-center"
           onClick={loadData}
           disabled={loading}
         >
           {loading ? 'Loading...' : 'Load Chart'}
         </button>
+                </div>
+
       </div>
 
       {loading ? (

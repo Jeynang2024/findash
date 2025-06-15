@@ -4,6 +4,7 @@ import Chartboard from './Chartboard';
 import Lashboard from './Dashboard' 
 import HoldingsChart from '../components/Holdings';
 import { Link } from 'react-router-dom';
+import "../styles/header.css";
 const Dashboard = () => {
 const [totalBalance, setTotalBalance] = useState(0);
 const [balances, setBalances] = useState([]);
@@ -29,24 +30,26 @@ const [balances, setBalances] = useState([]);
   return (
     <div>
       
-        <div className="min-h-screen bg-gray-900 text-white flex">
+        <div className="min-h-screen gradient-border text-white flex">
 
       <div className="flex-1 overflow-x-hidden">
         {/* Header with toggle button */}
-        <div className="bg-gray-800 p-4 flex items-center justify-between ">
+        <div                 style={{ backgroundColor: '#1e1b2e	' }} 
+
+        className=" p-4 flex items-center justify-between ">
             <div className="flex space-x-4 ml-4">
-    <Link to="/backtest" className="text-blue-400 hover:text-blue-300 font-medium">
+    <Link to="/backtest"  className="text-violet-900 hover:text-violet-300 font-medium">
       Backtest
     </Link>
     <Link to="/livetrading" className="text-green-400 hover:text-green-300 font-medium">
       Live Trading
     </Link>
   </div>
-          <div className="text-xl font-bold">Dashboard</div>
+          <div className="text-xl font-bold text-gradient">Dashboard</div>
           
         </div>
 
-        <div className="p-6">
+        <div className="p-6 ">
           {/*
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
              <div className="bg-gray-800 rounded-xl p-4">
@@ -60,14 +63,19 @@ const [balances, setBalances] = useState([]);
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-gray-800 lg:col-span-2 p-4 rounded-xl overflow-hidden">
+            <div                 style={{ backgroundColor: '#1e1b2e	' }} 
+
+            className=" lg:col-span-2 p-4 rounded-xl overflow-hidden">
               <Chartboard/>
             { /* <h3 className="mb-4 font-semibold">Unique Visitors</h3>
               <Chart options={lineOptions} series={lineSeries} type="area" height={300} />*/}
             </div>
 
-            <div className="bg-gray-800 p-4 rounded-xl">
-                <div className="bg-gray-800 rounded-xl p-4">
+            <div                 style={{ backgroundColor: '#1e1b2e	' }} 
+
+            className=" p-4 rounded-xl">
+                <div                 style={{ backgroundColor: '#1e1b2e	' }} 
+ className=" rounded-xl p-4">
     <p className="text-sm text-gray-400">Account Balance</p>
     <h2 className="text-xl font-semibold">
       {totalBalance > 0 ? `$${formatBalance(totalBalance)}` : 'Loading...'}
@@ -80,7 +88,8 @@ const [balances, setBalances] = useState([]);
           </div>
 
           {/* Table */}
-          <div className="mt-3 bg-gray-800 p-4 rounded-xl overflow-x-auto">
+          <div                 style={{ backgroundColor: '#1e1b2e	' }} 
+className="mt-3  p-4 rounded-xl overflow-x-auto">
           <HoldingsChart onBalancesUpdate={handleBalancesUpdate} />
 
             {/*<h3 className="font-semibold mb-3">Recent Orders</h3>

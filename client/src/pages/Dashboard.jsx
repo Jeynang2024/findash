@@ -66,9 +66,9 @@ const connectionStatus = wsConnections.some(ws => ws.status === 'disconnected')
 
  
   return (
-   <div className="flex h-[70vh] bg-gray-950 text-white">
+   <div className="flex h-[70vh]  text-white">
   {/* Left Sidebar */}
-  <div className="w-full p-3 overflow-y-auto bg-gray-900/60 backdrop-blur-md border-r border-gray-700">
+  <div className="w-full p-3 overflow-y-auto  backdrop-blur-md border-r border-gray-700">
     
     <PriceTable prices={display} />
   </div>
