@@ -1,0 +1,252 @@
+import React, { useEffect, useState } from 'react';
+import Chart from 'react-apexcharts';
+
+const fetchKlines = async (symbol = 'BTCUSDT', interval = '1h', limit = 500) => {
+  const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`);
+  const data = await res.json();
+  return data.map(c => ({
+    time: c[0],
+    close: parseFloat(c[4]),
+  }));
+};
+
+const calculateRSI = (closes, period) => {
+  const rsi = [];
+  let prevAvgGain = 0;
+  let prevAvgLoss = 0;
+
+  // Calculate initial averages
+  let gains = 0;
+  let losses = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = closes[i].close - closes[i - 1].close;
+    if (diff > 0) gains += diff;
+    else losses -= diff;
+  }
+  prevAvgGain = gains / period;
+  prevAvgLoss = losses / period;
+
+  // First RSI value
+  const rs = prevAvgGain / (prevAvgLoss || 1);
+  rsi.push({ x: closes[period].time, y: 100 - 100 / (1 + rs) });
+
+  // Subsequent RSI values
+  for (let i = period + 1; i < closes.length; i++) {
+    const diff = closes[i].close - closes[i - 1].close;
+    let currentGain = 0;
+    let currentLoss = 0;
+
+    if (diff > 0) currentGain = diff;
+    else currentLoss = -diff;
+
+    // Smooth averages
+    prevAvgGain = (prevAvgGain * (period - 1) + currentGain) / period;
+    prevAvgLoss = (prevAvgLoss * (period - 1) + currentLoss) / period;
+
+    const rs = prevAvgGain / (prevAvgLoss || 1);
+    rsi.push({ x: closes[i].time, y: 100 - 100 / (1 + rs) });
+  }
+
+  return rsi;
+};
+
+const RSIChart = () => {
+  const [symbol, setSymbol] = useState('BTCUSDT');
+  const [interval, setInterval] = useState('1h');
+  const [period, setPeriod] = useState(14);
+  const [overbought, setOverbought] = useState(70);
+  const [oversold, setOversold] = useState(30);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const raw = await fetchKlines(symbol, interval);
+      const rsi = calculateRSI(raw, period);
+      setData(rsi);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [interval, symbol, period, overbought, oversold]);
+
+  const options = {
+    chart: {
+      type: 'line',
+      height: 350,
+      background: '#1e293b',
+      foreColor: '#f1f5f9',
+      toolbar: {
+        show: true,
+        tools: {
+          download: true,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        }
+      }
+    },
+    stroke: { 
+      curve: 'smooth', 
+      width: 2 
+    },
+    xaxis: { 
+      type: 'datetime',
+      labels: {
+        style: {
+          colors: '#f1f5f9'
+        }
+      }
+    },
+    yaxis: {
+      min: 0,
+      max: 100,
+      labels: {
+        style: {
+          colors: '#f1f5f9'
+        }
+      },
+      crosshairs: {
+        show: true,
+        position: 'back',
+        stroke: {
+          color: '#64748b',
+          width: 1,
+          dashArray: 0
+        }
+      }
+    },
+    grid: {
+      borderColor: '#334155'
+    },
+    annotations: {
+      yaxis: [
+        {
+          y: overbought,
+          borderColor: '#EF4444',
+          strokeDashArray: 4,
+          label: { 
+            text: 'Overbought', 
+            style: { 
+              color: '#fff', 
+              background: '#EF4444',
+              fontSize: '12px'
+            } 
+          },
+        },
+        {
+          y: oversold,
+          borderColor: '#3B82F6',
+          strokeDashArray: 4,
+          label: { 
+            text: 'Oversold', 
+            style: { 
+              color: '#fff', 
+              background: '#3B82F6',
+              fontSize: '12px'
+            } 
+          },
+        },
+      ],
+    },
+    tooltip: {
+      theme: 'dark',
+      x: {
+        format: 'dd MMM yyyy HH:mm'
+      }
+    }
+  };
+
+  const series = [{ 
+    name: 'RSI', 
+    data: data,
+    color: '#818cf8'
+  }];
+
+  return (
+    <div className="p-4 bg-slate-900 text-white min-h-screen">
+      <h2 className="text-xl font-semibold mb-4">RSI Chart</h2>
+
+      <div className="flex flex-wrap gap-4 mb-4">
+        <select 
+          className="p-2 bg-slate-800 rounded border border-slate-700"
+          value={symbol}
+          onChange={e => setSymbol(e.target.value)}
+        >
+          <option value="BTCUSDT">BTC/USDT</option>
+          <option value="ETHUSDT">ETH/USDT</option>
+          <option value="SOLUSDT">SOL/USDT</option>
+        </select>
+        
+        <select 
+          className="p-2 bg-slate-800 rounded border border-slate-700"
+          value={interval}
+          onChange={e => setInterval(e.target.value)}
+        >
+          <option value="1m">1 Minute</option>
+          <option value="5m">5 Minutes</option>
+          <option value="15m">15 Minutes</option>
+          <option value="1h">1 Hour</option>
+          <option value="4h">4 Hours</option>
+          <option value="1d">1 Day</option>
+        </select>
+        
+        <input 
+          type="number" 
+          className="p-2 bg-slate-800 rounded border border-slate-700 w-24"
+          value={period} 
+          onChange={e => setPeriod(+e.target.value)} 
+          placeholder="RSI Period" 
+        />
+        
+        <input 
+          type="number" 
+          className="p-2 bg-slate-800 rounded border border-slate-700 w-32"
+          value={overbought} 
+          onChange={e => setOverbought(+e.target.value)} 
+          placeholder="Overbought" 
+        />
+        
+        <input 
+          type="number" 
+          className="p-2 bg-slate-800 rounded border border-slate-700 w-32"
+          value={oversold} 
+          onChange={e => setOversold(+e.target.value)} 
+          placeholder="Oversold" 
+        />
+        
+        <button 
+          className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800"
+          onClick={loadData}
+          disabled={loading}
+        >
+          {loading ? 'Loading...' : 'Refresh'}
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      ) : (
+        <Chart 
+          options={options} 
+          series={series} 
+          type="line" 
+          height={350} 
+        />
+      )}
+    </div>
+  );
+};
+
+export default RSIChart;

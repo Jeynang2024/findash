@@ -1,0 +1,26 @@
+/* Fix for the white box in ApexCharts toolbar */
+.apexcharts-toolbar {
+  background: transparent !important;
+}
+
+.apexcharts-menu {
+  background: #1E293B !important;
+  border: 1px solid #334155 !important;
+  color: #CBD5E1 !important;
+}
+
+.apexcharts-menu-item {
+  color: #CBD5E1 !important;
+}
+
+.apexcharts-menu-item:hover {
+  background: #334155 !important;
+}
+
+.apexcharts-toolbar-custom-icon {
+  color: #CBD5E1 !important;
+}
+
+.apexcharts-download-icon {
+  filter: invert(0.8) !important;
+}

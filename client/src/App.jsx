@@ -11,6 +11,8 @@ import Footer from './components/Footer';
 import Dashboard from './pages/Dashboard';
 import Indicator from './pages/Indicator';
 import Chartboard from './pages/Chartboard';
+import Historical from "./components/buy_sell_sma"
+import BacktestDashboard from './pages/Backtest';
 function App() {
   const [ticker, setTicker] = useState({});
 
@@ -32,11 +34,15 @@ function App() {
       <Header />
       <div className="container mt-4 ">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Historical />} />
           <Route path="/about" element={<About />} />
-          <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={ <Login />}
+        />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Chartboard />} />
+          <Route path="/dashboard" element={<Indicator />} />
+          <Route path="/backtest" element={<BacktestDashboard />} />
 
         </Routes>
       </div>

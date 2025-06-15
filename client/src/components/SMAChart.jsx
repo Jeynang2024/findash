@@ -53,7 +53,7 @@ const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
     }
   };
 
-  return <Chart options={options} series={series} type="line" height={100} />;
+  return <Chart options={options} series={series} type="line" height={250} />;
 };
 
 export default SMAChart;

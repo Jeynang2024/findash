@@ -48,7 +48,7 @@ title: {
     ]
   };
 
-  return <Chart options={options} series={series} type="line" width="100%" height={100} />;
+  return <Chart options={options} series={series} type="line" width="100%" height={250} />;
 };
 
 export default RSIChart;
