@@ -5,7 +5,7 @@ const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.SECRET_KEY || 'binance', // Use environment variable in production
 };
-passport.use(new JwtStrategy(opts, async (jwtPayload, done) => {
+passport.use("jwt",new JwtStrategy(opts, async (jwtPayload, done) => {
   try {
     const result = await pool.query('SELECT * FROM crypto_users WHERE id = $1', [jwtPayload.userId]);
     const user = result.rows[0];

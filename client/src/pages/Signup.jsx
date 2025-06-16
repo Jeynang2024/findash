@@ -4,7 +4,9 @@ function Signup() {
    const [user,setUser] = useState({
         username: "",
         email: "",
-        password: ""
+        password: "",
+        apiKey: "",
+       apiSecret: ""
     });
     const [token, setToken] =useState("");
     const navigate = useNavigate();
@@ -52,25 +54,45 @@ function Signup() {
 
 
     return (
-        <div className="container" style={{ backgroundColor: "rgba(64, 50, 84, 0.3)" }}>
-            
-        <h1>Sign Up</h1>
-        <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-            <label htmlFor="username" className="form-label" >Username</label>
-            <input type="text" className="form-control" id="username" required  name="username" onChange={handleChange} value={user.username}/>
-            </div>
-            <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email address</label>
-            <input type="email" className="form-control" id="email" required  name="email" onChange={handleChange} value={user.email}/>
-            </div>
-            <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input type="password" className="form-control" id="password" required  name="password" onChange={handleChange} value={user.password}/>
-            </div>
-            <button type="submit" className="btn btn-primary">Sign Up</button>
-        </form>
+       <div className="container" style={{ backgroundColor: "rgba(64, 50, 84, 0.3)" }}>
+      <h1>Sign Up</h1>
+      <form onSubmit={handleSubmit}>
+
+        {/* Username */}
+        <div className="mb-3">
+          <label htmlFor="username" className="form-label">Username</label>
+          <input type="text" className="form-control" id="username" required name="username" onChange={handleChange} value={user.username}/>
         </div>
+
+        {/* Email */}
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">Email address</label>
+          <input type="email" className="form-control" id="email" required name="email" onChange={handleChange} value={user.email}/>
+        </div>
+
+        {/* Password */}
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">Password</label>
+          <input type="password" className="form-control" id="password" required name="password" onChange={handleChange} value={user.password}/>
+        </div>
+
+        {/* Binance API Key */}
+        <div className="mb-3">
+          <label htmlFor="apiKey" className="form-label">Binance API Key</label>
+          <input type="text" className="form-control" id="apiKey" name="apiKey" onChange={handleChange} value={user.apiKey} placeholder="Enter Binance API Key" />
+        </div>
+
+        {/* Binance API Secret */}
+        <div className="mb-3">
+          <label htmlFor="apiSecret" className="form-label">Binance API Secret</label>
+          <input type="password" className="form-control" id="apiSecret" name="apiSecret" onChange={handleChange} value={user.apiSecret} placeholder="Enter Binance API Secret" />
+        </div>
+
+        {/* Submit */}
+        <button type="submit" className="btn btn-primary">Sign Up</button>
+
+      </form>
+    </div>
     );
     }
 

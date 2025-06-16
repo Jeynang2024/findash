@@ -1,36 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
-import '../styles/holdings.css'; // Import your custom styles
+import '../styles/holdings.css';
+import axios from 'axios'; // Import your custom styles
 const HoldingsChart = ({ onBalancesUpdate }) => {
   const [balances, setBalances] = useState([]);
+const token = localStorage.getItem('token');
+
 
   useEffect(() => {
     const fetchBalances = async () => {
-      const res = await fetch('http://localhost:5001/account');
-      if(!res.ok) {
-             throw new Error(`HTTP error! status: ${response.status}`);
- // Return empty array instead of failing
-      }
-      const data = await res.json();
-      console.log('Fetched account data:', data);
-      if (!Array.isArray(data)) {
-      console.error('Expected array but got:', data);
-      return [];
-    }
-     const filtered = data
-  .filter(b => parseFloat(b.free) > 0 || parseFloat(b.locked) > 0)
-  .map(b => ({ asset: b.asset, amount: parseFloat(b.free) }))
-  .sort((a, b) => b.amount - a.amount)   // Sort descending
-  .slice(0, 20);                         // ✅ Take top 50
+      try {
+        const res = await axios.get('http://localhost:5001/account', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        
+        if (!Array.isArray(res.data)) {
+          console.error('Expected array but got:', res.data);
+          return [];
+        }
+        
+        const filtered = res.data
+          .filter(b => parseFloat(b.free) > 0 || parseFloat(b.locked) > 0)
+          .map(b => ({ 
+            asset: b.asset, 
+            amount: parseFloat(b.free) 
+          }))
+          .sort((a, b) => b.amount - a.amount)
+          .slice(0, 20);
 
-setBalances(filtered);
-if (onBalancesUpdate) {
-        onBalancesUpdate(data);
+        setBalances(filtered);
+        
+        if (onBalancesUpdate) {
+          onBalancesUpdate(res.data);
+        }
+      } catch (error) {
+console.error('Full error details:', {
+    message: error.message,
+    status: error.response?.status,
+    data: error.response?.data,
+    headers: error.config?.headers,
+    url: error.config?.url
+  });        // You might want to set some error state here
+        return [];
       }
-
     };
+    
     fetchBalances();
-  }, []);
+  }, [token, onBalancesUpdate]); // Added dependencies
+
 
  const chartOptions = {
   chart: {

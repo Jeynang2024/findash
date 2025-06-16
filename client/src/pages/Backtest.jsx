@@ -5,6 +5,7 @@ import SMAChart from '../components/buy_sell_sma';
 import EMAChart from '../components/Ema_backtest';
 import MACDChart from '../components/Mcad_backtest';
 import RSIChart from '../components/Rsi_backtest';
+import LiveTrading from "../components/LiveTrading_backtest"
 const IndicatorDashboard = () => {
 const [indicator, setIndicator] = useState('SMA');
   const [symbol, setSymbol] = useState('BTCUSDT');
@@ -64,7 +65,7 @@ const [indicator, setIndicator] = useState('SMA');
   </div>
       {/* Chart Rendered Below */}
 <div className="mt-6 ">{indicator && renderChart()}</div>
-
+    <LiveTrading/>
     </div>
   );
 };

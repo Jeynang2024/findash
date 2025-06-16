@@ -9,7 +9,7 @@ dotenv.config();
 const router = express.Router();
 
 router.post("/signup",async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password ,apikey ,apisecret} = req.body;
 
 
     try {
@@ -19,8 +19,8 @@ router.post("/signup",async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool.query(
-            "INSERT INTO crypto_users (username, email, password) VALUES ($1, $2, $3) RETURNING *",
-            [username, email, hashedPassword]
+            "INSERT INTO crypto_users (username, email, password,apikey,apisecret) VALUES ($1, $2, $3,$4,$5) RETURNING *",
+            [username, email, hashedPassword,apikey ,apisecret]
         );
         const user = newUser.rows[0];
         const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: '1h' });

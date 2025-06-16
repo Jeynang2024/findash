@@ -74,13 +74,14 @@ const [balances, setBalances] = useState([]);
             <div                 style={{ backgroundColor: '#1e1b2e	' }} 
 
             className=" p-4 rounded-xl">
-                <div                 style={{ backgroundColor: '#1e1b2e	' }} 
- className=" rounded-xl p-4">
-    <p className="text-sm text-gray-400">Account Balance</p>
-    <h2 className="text-xl font-semibold">
-      {totalBalance > 0 ? `$${formatBalance(totalBalance)}` : 'Loading...'}
-    </h2>
-  </div>
+                <div  
+                style={{ backgroundColor: '#1e1b2e	' }} 
+                className=" rounded-xl p-4">
+               <p className="text-sm text-gray-400">Account Balance</p>
+               <h2 className="text-xl font-semibold">
+                {totalBalance > 0 ? `$${formatBalance(totalBalance)}` : 'Loading...'}
+                </h2>
+                </div>
               <Lashboard/>
              {/* <h3 className="mb-4 font-semibold">This Week Statistics</h3>
               <Chart options={barOptions} series={barSeries} type="bar" height={300} />*/}

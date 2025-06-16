@@ -12,7 +12,6 @@ const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
       y: smaValues[i] // now matches with sliced rawData
     }))
     .filter(point => !isNaN(point.y)); // prevent NaNs
-   console.log("SMA Series:", smaSeries);
   const series = [
     {
       name: `SMA ${period}`,

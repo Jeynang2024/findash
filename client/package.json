@@ -16,6 +16,7 @@
     "bcrypt": "^6.0.0",
     "binance-api-node": "^0.12.9",
     "bootstrap": "^5.3.6",
+    "crypto-js": "^4.2.0",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
     "npm": "^11.4.2",
