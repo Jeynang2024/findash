@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "../styles/header.css"
+import "../styles/home.css"
 
  const authRequest = () => {
   const token = localStorage.getItem('token');
@@ -86,7 +87,7 @@ const placeOrder = async () => {
   }
 };
   const computeProfit = async () => {
-    const { data } = await axios.get(`${BE}/profit/${symbol}`, authRequest());
+    const { data } = await axios.get(`${BE}/profit`, authRequest());
     setProfit(data);
   };
 
@@ -132,30 +133,41 @@ const placeOrder = async () => {
       )}
 
       {profit && (
-        <div className="mb-4 p-4 bg-gray-100 rounded">
-          <p className="text-lg font-semibold text-gray-700">
-            Profit for {profit.symbol}:
+        <div className="mb-4 p-4 bg-dark rounded">
+          <p className="text-lg font-semibold text-white">
+            Profit :
           </p>
-          <p className="text-xl font-bold text-gray-900">
-            {profit.profit.toFixed(4)}
+          <p className="text-xl font-bold text-gray-300">
+            {profit.profit}
           </p>
-          <p className="text-sm text-gray-600">
-            Open quantity: {profit.openQty}
-          </p>
+          
         </div>
       )}
 
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Your Trades:</h3>
-        <ul className="divide-y divide-gray-200">
-          {trades.map(t => (
-            <li key={t.id} className="py-2 flex justify-between text-white">
-              <span>
-                <strong className="capitalize">{t.side}</strong> {t.quantity}@{t.price}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <div className='mt-6'>
+        <h3 className="text-lg font-semibold mb-2  text-gradient">Your Trades:</h3>
+        <table className="min-w-full  home-table text-white">
+  <thead>
+    <tr>
+        <th className="py-2 text-left">Symbol</th>
+
+      <th className="py-2 text-left">Side</th>
+      <th className="py-2 text-right">Quantity</th>
+      <th className="py-2 text-right">Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    {trades.map(t => (
+      <tr key={t.id} className="border-b border-gray-600">
+                <td className="py-2 capitalize">{t.symbol}</td>
+
+        <td className="py-2 capitalize">{t.side}</td>
+        <td className="py-2 text-left">{t.quantity}</td>
+        <td className="py-2 text-left">{t.price}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
       </div>
 
     </div>

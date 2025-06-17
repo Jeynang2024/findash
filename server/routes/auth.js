@@ -19,7 +19,7 @@ router.post("/signup",async (req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool.query(
-            "INSERT INTO crypto_users (username, email, password,apikey,apisecret) VALUES ($1, $2, $3,$4,$5) RETURNING *",
+            "INSERT INTO crypto_users (username, email, password,api_key,api_secret) VALUES ($1, $2, $3,$4,$5) RETURNING *",
             [username, email, hashedPassword,apikey ,apisecret]
         );
         const user = newUser.rows[0];
@@ -57,9 +57,11 @@ router.post("/login", async (req, res) => {
     }
 });
 
+// In your auth routes file
 router.get('/dashboard', passport.authenticate("jwt",{session:false}), (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
+// In your auth routes file
 router.get('/backtest', passport.authenticate("jwt",{session:false}), (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });

@@ -18,18 +18,6 @@ import './App.css';
 function App() {
   const [ticker, setTicker] = useState({});
 
-  /*useEffect(() => {
-    const client = Binance();
-    const clean = client.ws.ticker('BTCUSDT', data => {
-      setTicker(data); 
-      console.log(data)// live data from WebSocket
-    });
-    return () => {
-
-      clean(); 
-
-    }// unsubscribe on unmount
-  }, []);*/
 
   return (
      < div className="wrapper">

@@ -41,30 +41,14 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
         return <RSIChart rawData={rawData} calculateRSI={calculateRSI} period={indicatorPeriod} />;
       case "macd":
         return <MACDChart rawData={rawData} calculateMACD={calculateMACD} />;
-     /* default:
-        return <BaseCandleChart data={[{
-          name: symbol,
-          type: "candlestick",
-          data: rawData.map(c => ({
-            x: new Date(c.time),
-            y: [parseFloat(c.open), parseFloat(c.high), parseFloat(c.low), parseFloat(c.close)]
-          }))
-        }]} options={{
-          chart: { type: "candlestick", background: "#1e293b" },
-          xaxis: { type: "datetime", labels: { style: { colors: "#94A3B8" } } },
-          yaxis: [{ title: { text: "Price" }, labels: { style: { colors: "#94A3B8" } } }]
-        }} />;*/
+    
     }
   };
 
   return (
     
     <div className="min-h-screen  text-slate-100 p-4">
-     {/* <div className="flex flex-col ">
-        <div className="w-full lg:w-1/4 bg-slate-800 rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-4 text-emerald-400">Market Prices</h2>
-          <Dashboard />
-        </div>*/}
+    
         <div className="w-full  rounded-lg pt-4 ">
           <div className="flex flex-wrap gap-3 mb-4 p-2">
             <input type="text" value={symbol} onChange={(e) => setSymbol(e.target.value.toUpperCase())} className="p-2 bg-slate-700 rounded text-slate-100"   style={{ backgroundColor: 'rgba(163, 121, 226, 0.3)	' }} 

@@ -6,14 +6,9 @@ import "../styles/footer.css"; // Assuming you have a global CSS file for custom
 export default function Footer() {
   return (
     <footer className="footer">
-      <div className="footer-container">
-        <div className="footer-links">
-          <Link className="footer-link gradient-text" to="/">Home</Link>
-          <span></span>
-          <Link className="footer-link gradient-text" to="/about">About</Link>
-       
-        </div>
-        <div className="footer-right">
+      <div className="footer-container ">
+        
+        <div className="footer-right text-start">
           <p className="footer-credit">© {new Date().getFullYear()} FinDash</p>
         </div>
       </div>

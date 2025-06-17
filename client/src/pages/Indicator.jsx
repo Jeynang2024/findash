@@ -1,15 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 import Chartboard from './Chartboard'; 
 import Lashboard from './Dashboard' 
 import HoldingsChart from '../components/Holdings';
 import { Link } from 'react-router-dom';
+import axios from "axios"
 import "../styles/header.css";
+const authRequest = () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    // Handle missing token (redirect to login)
+    window.location.href = '/login';
+    throw new Error('No authentication token found');
+  }
+  return {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+};
 const Dashboard = () => {
 const [totalBalance, setTotalBalance] = useState(0);
 const [balances, setBalances] = useState([]);
+const [profit ,setProfit]=useState([0]);
+    const BE = "http://localhost:5001";
 
-  
  const handleBalancesUpdate = (fetchedBalances) => {
     setBalances(fetchedBalances);
     
@@ -19,6 +35,25 @@ const [balances, setBalances] = useState([]);
       setTotalBalance(parseFloat(usdtBalance.free) + parseFloat(usdtBalance.locked));
     }
   };
+  useEffect(() => {
+  const fetchProfit = async () => {
+const token=localStorage.getItem("token");
+    if(!token){
+      navigate("/login", { replace: true });
+      return;
+    }    
+    try {
+      const { data } = await axios.get(`${BE}/profit`, authRequest())
+      setProfit(data.profit)
+    } catch (error) {
+      console.error('Error fetching profit:', error)
+      // Optionally, set an error state here
+    }
+  }
+
+  fetchProfit()
+}, [])
+
 
   // Format balance with commas
   const formatBalance = (balance) => {
@@ -37,14 +72,7 @@ const [balances, setBalances] = useState([]);
         <div                 style={{ backgroundColor: '#1e1b2e	' }} 
 
         className=" p-4 flex items-center justify-between ">
-            <div className="flex space-x-4 ml-4">
-    <Link to="/backtest"  className="text-violet-900 hover:text-violet-300 font-medium">
-      Backtest
-    </Link>
-    <Link to="/livetrading" className="text-green-400 hover:text-green-300 font-medium">
-      Live Trading
-    </Link>
-  </div>
+           
           <div className="text-xl font-bold text-gradient">Dashboard</div>
           
         </div>
@@ -80,6 +108,14 @@ const [balances, setBalances] = useState([]);
                <p className="text-sm text-gray-400">Account Balance</p>
                <h2 className="text-xl font-semibold">
                 {totalBalance > 0 ? `$${formatBalance(totalBalance)}` : 'Loading...'}
+                </h2>
+                </div>
+                 <div  
+                style={{ backgroundColor: '#1e1b2e	' }} 
+                className=" rounded-xl p-4">
+               <p className="text-sm text-gray-400">Profit</p>
+               <h2 className="text-xl font-semibold">
+               { `$${profit}` }
                 </h2>
                 </div>
               <Lashboard/>

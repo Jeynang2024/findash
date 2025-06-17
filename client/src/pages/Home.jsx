@@ -51,10 +51,31 @@ export default function Home() {
   }, []);
 
   return (
+
+    <div>
+      <div className="cover gradient-border">
+  <div className="home-container main_cover" style={{backgroundColor: "rgba(73, 56, 97, 0.3)"}}>
+     <div className="list">
+      <div className="item">
+        <img src="./src/images/bitcoin.avif" alt="hidden love"/>
+        <div className="content">
+          <div className="title text-gradient">TRADE LIVE</div>
+          <div className="releasedate">Test Your Edge</div>
+          <div className="about">Real-time charts and powerful backtesting tools — all in one platform.</div>
+         
+        </div>
+      </div>
+      </div>
+        
+  </div>
+</div>
     <div className="home-container" style={{backgroundColor: "rgba(73, 56, 97, 0.3)"}}>
+      
       <h2 className="gradient-text">Live Bitcoin Dashboard</h2>
 
-      <div className="tables">
+      <div className="tables ">
+          <div className="table-container">
+
         <table className="home-table">
           <thead>
             <tr><th colSpan="4">BTC / USDT</th></tr>
@@ -72,7 +93,7 @@ export default function Home() {
           </tbody>
         </table>
 
-        <table className="home-table">
+        <table className="home-table mt-4">
           <thead>
             <tr><th>Currency</th><th>BTC Rate</th></tr>
           </thead>
@@ -86,6 +107,8 @@ export default function Home() {
           </tbody>
         </table>
       </div>
+      </div>
+    </div>
     </div>
   );
 }

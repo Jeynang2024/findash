@@ -20,7 +20,6 @@ app.use(cors({
   credentials: true,
 }));
 app.use(passport.initialize()); // Initialize Passport for authentication
-// 2. Explicitly handle OPTIONS pre-flight requests (if needed)
 app.options('/{*splat}', cors());
 app.use('/api/auth', authorizationRoutes); // Use the auth routes
 
@@ -30,40 +29,7 @@ app.use('/api/auth', authorizationRoutes); // Use the auth routes
 
 //const BASE_URL = 'https://testnet.binance.vision';
 
-/*const client = Binance.default({
-  apiKey: "6fvqCgvHOvSF1F6LboI18hO4qj5bGTjAnzxWhW2Jwv6PCx0KnJEPXe5kbiFTYoDu",
-  apiSecret: "uruxesHtN7SJOrfAeQU4xx5PTPsAcQR0EJAPQTQhB8y4pcQFuS9z5gEKOZUvZ6RR",
-  httpBase: 'https://testnet.binance.vision' // 🔥 Important for testnet
-});
 
-app.get('/account', async (req, res) => {
-  try {
-    const accountInfo = await client.accountInfo();
-    
-    // Ensure we always return an array
-    const balances = accountInfo.balances || [];
-    
-    // Filter and format the response
-    const nonZeroBalances = balances
-      .filter(b => parseFloat(b.free) > 0 || parseFloat(b.locked) > 0)
-      .map(b => ({
-        asset: b.asset,
-        free: parseFloat(b.free),
-        locked: parseFloat(b.locked),
-        total: parseFloat(b.free) + parseFloat(b.locked)
-      }));
-    
-    res.json(nonZeroBalances);
-    
-  } catch (error) {
-    console.error('Binance API error:', error);
-    res.status(500).json({
-      error: 'Failed to fetch balances',
-      details: error.message,
-      balances: [] // Consistent return shape
-    });
-  }
-});*/
 async function getUserBinanceClient(userId) {
   const { rows } = await pool.query(
     'SELECT api_key, api_secret FROM crypto_users WHERE id = $1',
@@ -151,8 +117,7 @@ const paramString = new URLSearchParams(params).toString();
 
 const signature = signQueryString(paramString, apiSecret);
 const finalParams = new URLSearchParams({ ...params, signature });
-    // 2. Place market order on Binance Testnet
-     // 4. Place order on Binance Testnet
+
       const binanceResponse = await axios.post(
         'https://testnet.binance.vision/api/v3/order',
   finalParams.toString(),
@@ -165,18 +130,17 @@ const finalParams = new URLSearchParams({ ...params, signature });
       );
 
 
-    // If using newOrderRespType: 'FULL', it includes `fills`
 const fills = binanceResponse.data.fills || [];
       const price = fills.length > 0 ? fills[0].price : null;
+      
       const executedQty = fills.length > 0 ? fills[0].qty : quantity;
       const orderId = binanceResponse.data.orderId;
-
-    // 3. Store the trade in your Postgres DB
+      const spent=price*executedQty;
     await pool.query(
       `INSERT INTO trades 
        (user_id, symbol, side, price, quantity, order_id) 
        VALUES ($1, $2, $3, $4, $5, $6)`,
-      [userId, symbol, side, price, quantity, orderId]
+      [userId, symbol, side, spent, quantity, orderId]
     );
 
     // 4. Send back the stored order and trade info
@@ -214,6 +178,32 @@ const fills = binanceResponse.data.fills || [];
     }
 
 );
+
+app.get('/profit', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  const userId = req.user.id;
+
+  const sql = `
+    SELECT
+      COALESCE(SUM(CASE WHEN side = 'BUY' THEN price END), 0) AS buy_total,
+      COALESCE(SUM(CASE WHEN side = 'SELL' THEN price END), 0) AS sell_total
+    FROM trades
+    WHERE user_id = $1;
+  `;
+
+  try {
+    const { rows } = await pool.query(sql, [userId]);
+    const { buy_total: buyTotal, sell_total: sellTotal } = rows[0];
+    const profit = sellTotal - buyTotal;
+    
+    res.json({ buyTotal, sellTotal, profit });
+  } catch (err) {
+    console.error('Error calculating profit:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 // GET endpoint to fetch trades for authenticated user
 app.get(
   '/trades',

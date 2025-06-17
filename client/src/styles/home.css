@@ -1,11 +1,24 @@
 .home-container {
-  max-width: 800px;
-  margin: 4rem auto;
+  max-width: 1400px;
+  margin: 2rem 2rem;
   background-color: #1e1e1e;
   padding: 2rem;
   border-radius: 8px;
   color: #e0e0e0;
 }
+.cover{
+  max-width: 1420px;
+
+}
+.gradient-border {
+  border: 4px solid #1e1b2e	;
+  border-radius: 12px; /* Optional for rounded corners */
+}
+.content-left {
+  color: #fff;
+}
+
+
 
 .gradient-text {
   background: linear-gradient(90deg, orange, purple);
@@ -26,7 +39,7 @@
 .home-table {
   width: 100%;
   border-collapse: collapse;
-      background: rgba(73, 47, 111, 0.3);
+  background: rgba(73, 47, 111, 0.3);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -35,7 +48,11 @@
   padding: 0.75rem;
   text-align: center;
   border-bottom: 1px solid #7b6c87;
+}.table-container {
+  width: 100%;
+  overflow-x: auto;
 }
+
 
 .home-table th {
   background: #512c70;
@@ -51,4 +68,69 @@
 
 .negative {
   color: #f44336;
+}
+.main_cover {
+  position: relative;
+  max-width: 1400px;
+  max-height:400px ;
+}
+.main_cover img {
+  display: block;
+  max-width: 1400px;
+  max-height:340px ;
+}
+.list .item {
+  position: relative;
+}
+.list .item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  opacity: 0.6;
+}
+
+.list .item .content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 80%;
+  transform: translate(-50%, -50%);
+  padding: 1rem;
+  box-sizing: border-box;
+  color: white;
+  text-shadow: 0 5px 10px rgb(24, 13, 3);
+  max-width: 100%;
+
+}
+ .list .item .content .title{
+    font-weight: bold;
+    letter-spacing: 5px;
+    font-weight: bold;
+    font-size: 3em;
+    list-style: 1.3em;
+
+
+}
+
+ .list .item .content .releasedate{
+    font-weight: bold;
+    font-size: 1.5em;
+    list-style: 1.3em;
+}
+@media (max-width: 480px) {
+  .list .item .content .title {
+    font-size: 0.8em;
+    letter-spacing: 1px;
+  }
+  
+  .list .item .content .releasedate {
+    font-size: 0.5em;
+  }
+  .list .item .content .about{
+        font-size: 0.4em;
+
+  }
+  .gradient-text {
+    font-size: 1.2rem;
+  }
 }

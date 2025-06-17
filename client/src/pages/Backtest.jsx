@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import "../styles/header.css";
 import { FiSettings } from 'react-icons/fi';
 import SMAChart from '../components/buy_sell_sma';
@@ -7,11 +7,17 @@ import MACDChart from '../components/Mcad_backtest';
 import RSIChart from '../components/Rsi_backtest';
 import LiveTrading from "../components/LiveTrading_backtest"
 const IndicatorDashboard = () => {
-const [indicator, setIndicator] = useState('SMA');
+  const [indicator, setIndicator] = useState('SMA');
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [interval, setInterval] = useState('1h');
 
- 
+ useEffect(()=>{
+    const token=localStorage.getItem("token");
+    if(!token){
+      navigate("/login", { replace: true });
+      return;
+    }}
+  ,[])
 
   const renderChart = () => {
     switch (indicator) {
