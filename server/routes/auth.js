@@ -9,9 +9,10 @@ dotenv.config();
 const router = express.Router();
 
 router.post("/signup",async (req, res) => {
-    const { username, email, password ,apikey ,apisecret} = req.body;
+    const { username, email, password ,apiKey ,apiSecret} = req.body;
 
-
+  console.log("api key",apiKey);    
+    console.log("api secret",apiSecret);
     try {
         const response=await pool.query("SELECT * FROM crypto_users WHERE email = $1", [email]);
         if (response.rows.length > 0) {
@@ -20,7 +21,7 @@ router.post("/signup",async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await pool.query(
             "INSERT INTO crypto_users (username, email, password,api_key,api_secret) VALUES ($1, $2, $3,$4,$5) RETURNING *",
-            [username, email, hashedPassword,apikey ,apisecret]
+            [username, email, hashedPassword,apiKey ,apiSecret]
         );
         const user = newUser.rows[0];
         const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY, { expiresIn: '1h' });
@@ -58,11 +59,5 @@ router.post("/login", async (req, res) => {
 });
 
 // In your auth routes file
-router.get('/dashboard', passport.authenticate("jwt",{session:false}), (req, res) => {
-  res.json({ message: 'This is a protected route', user: req.user });
-});
-// In your auth routes file
-router.get('/backtest', passport.authenticate("jwt",{session:false}), (req, res) => {
-  res.json({ message: 'This is a protected route', user: req.user });
-});
+
 export default router;

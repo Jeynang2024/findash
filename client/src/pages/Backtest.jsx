@@ -4,6 +4,7 @@ import { FiSettings } from 'react-icons/fi';
 import SMAChart from '../components/buy_sell_sma';
 import EMAChart from '../components/Ema_backtest';
 import MACDChart from '../components/Mcad_backtest';
+import News from '../components/news';
 import RSIChart from '../components/Rsi_backtest';
 import LiveTrading from "../components/LiveTrading_backtest"
 const IndicatorDashboard = () => {
@@ -18,7 +19,6 @@ const IndicatorDashboard = () => {
       return;
     }}
   ,[])
-
   const renderChart = () => {
     switch (indicator) {
       case 'SMA':
@@ -27,7 +27,7 @@ const IndicatorDashboard = () => {
         return <EMAChart symbol={symbol} />;
       case 'MACD':
         return (
-          <MACDChart
+          <News
             symbol={symbol}
      
           />
@@ -65,11 +65,8 @@ const IndicatorDashboard = () => {
       </select>
     </div>
 
-    {/* Placeholder for additional inputs if needed */}
-    {/* You can add other inputs for periods, smoothing, etc. here */}
   </div>
   </div>
-      {/* Chart Rendered Below */}
 <div className="mt-6 ">{indicator && renderChart()}</div>
     <LiveTrading/>
     </div>

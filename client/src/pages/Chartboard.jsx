@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import Dashboard from "./Dashboard";
+import React, { useState, useEffect,memo } from "react";
 import { getCandles } from "../components/binanceRestClient";
 import { calculateEMA, calculateMACD, calculateRSI, calculateSMA } from "../components/calculations";
 
@@ -115,4 +114,4 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
   );
 }
 
-export default CoinChart;
+export default memo(CoinChart);

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import "../styles/header.css"
 import "../styles/home.css"
-
+import dotenv from 'dotenv';
+dotenv.config();
  const authRequest = () => {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -18,6 +20,7 @@ import "../styles/home.css"
   };
 };
 export default function livetrading() {
+  const navigate = useNavigate();
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [qty, setQty] = useState('0.001');
   const [side, setSide] = useState('BUY');
@@ -27,7 +30,8 @@ export default function livetrading() {
     const [isLoadingTrades, setIsLoadingTrades] = useState(false);
 
 const [error,setError]=useState("");
-  const BE = "http://localhost:5001";
+const BE = import.meta.env.VITE_BE;
+  //const BE = "http://localhost:5001";
   
 
  
@@ -39,12 +43,15 @@ try {
       const response = await axios.get(`${BE}/trades`, authRequest());
       setTrades(Array.isArray(response.data?.trades) ? response.data.trades : []);
     } catch (err) {
+      alert("Please Login to see your trades");
+      console.error('Error fetching profit:', error)
+      // Optionally, set an error state here
+      navigate("/login", { replace: true });
+        
       console.error('Error fetching trades:', err);
       setError(`Failed to load trades: ${err.response?.data?.error || err.message}`);
       setTrades([]);
-    } finally {
-      setIsLoadingTrades(false);
-    }
+    } 
   };
   useEffect(() => {
   fetchTrades();
@@ -81,6 +88,7 @@ const placeOrder = async () => {
     }, ...prev]);
 
   } catch (err) {
+    
     console.error('Order error:', err);
     setError(`Order failed: ${err.response?.data?.error || err.message}`);
     setStatus('Order failed');
@@ -88,6 +96,7 @@ const placeOrder = async () => {
 };
   const computeProfit = async () => {
     const { data } = await axios.get(`${BE}/profit`, authRequest());
+    console.log('Profit data:', data);
     setProfit(data);
   };
 

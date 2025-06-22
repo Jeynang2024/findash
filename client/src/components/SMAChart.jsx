@@ -1,4 +1,4 @@
-import React from "react";
+import React,{memo} from "react";
 import Chart from "react-apexcharts";
 
 const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
@@ -8,7 +8,7 @@ const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
   const smaSeries = rawData
     .slice(period - 1) // skip initial undefineds
     .map((candle, i) => ({
-      x: new Date(candle.time),
+      x: new Date(candle.time)+ 5.5 * 60 * 60 * 1000, // Adjust for IST offset
       y: smaValues[i] // now matches with sliced rawData
     }))
     .filter(point => !isNaN(point.y)); // prevent NaNs
@@ -55,4 +55,4 @@ const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
   return <Chart options={options} series={series} type="line" height={250} />;
 };
 
-export default SMAChart;
+export default memo(SMAChart);

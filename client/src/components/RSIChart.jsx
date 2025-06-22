@@ -1,7 +1,7 @@
 
 // RSIChart.js
 import Chart from "react-apexcharts";
-
+import React, { memo } from "react";
 const RSIChart = ({ rawData, calculateRSI, period = 14 }) => {
   const rsiData = calculateRSI(rawData, period);
   const alignedRsiData = rawData.slice(rawData.length - rsiData.length).map((candle, i) => ({
@@ -53,4 +53,4 @@ title: {
   return <Chart options={options} series={series} type="line" width="100%" height={250} />;
 };
 
-export default RSIChart;
+export default memo(RSIChart);

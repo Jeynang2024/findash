@@ -5,7 +5,6 @@ import fetch from 'node-fetch';
 import authorizationRoutes from './routes/auth.js'; // Adjust the path as necessary
 import Binance from 'binance-api-node'; // Import the default export
 import passport from './routes/middleware/passportconfig.js';
-import CryptoJS from 'crypto-js';
 import { createHmac } from 'node:crypto';
 import axios from "axios"
 function signQueryString(queryString, secret) {
@@ -194,7 +193,6 @@ app.get('/profit', passport.authenticate('jwt', { session: false }), async (req,
     const { rows } = await pool.query(sql, [userId]);
     const { buy_total: buyTotal, sell_total: sellTotal } = rows[0];
     const profit = sellTotal - buyTotal;
-    
     res.json({ buyTotal, sellTotal, profit });
   } catch (err) {
     console.error('Error calculating profit:', err);
@@ -244,6 +242,41 @@ app.get(
     }
   }
 );
+// In your Node.js backend (server.js)
+app.get('/api/binance/ticker', async (req, res) => {
+  try {
+    const { symbol } = req.query;
+    const response = await axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+    res.json(response.data);
+  } catch (err) {
+    console.error('Binance proxy error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch ticker data' });
+  }
+});
+
+app.get(
+  '/dashboard',
+  passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/login'
+  }),
+  (req, res) => {
+    res.json({ message: 'This is a protected route', user: req.user });
+  }
+);
+
+// In your auth routes file
+app.get(
+  '/backtest',
+  passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/login'
+  }),
+  (req, res) => {
+    res.json({ message: 'This is a protected route', user: req.user });
+  }
+);
+
 // Middleware to parse JSON bodies
 
 app.listen(5001, () => console.log('Listening on port 5001'));

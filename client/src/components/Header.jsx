@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 
 
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState,memo} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Link, NavLink } from 'react-router-dom';
@@ -9,7 +9,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../styles/header.css';
 
-export default function Header() {
+function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
@@ -60,3 +60,4 @@ export default function Header() {
     </nav>
   );
 }
+export default memo(Header); // Using memo to prevent unnecessary re-renders

@@ -11,6 +11,7 @@ function Signup() {
     const [token, setToken] =useState("");
     const navigate = useNavigate();
     const handleChange = (e) => {
+      console.log("User input changed:", e.target.name, e.target.value);
         const { name, value } = e.target;
         setUser((prevUser) => {
             return {
@@ -79,13 +80,13 @@ function Signup() {
         {/* Binance API Key */}
         <div className="mb-3">
           <label htmlFor="apiKey" className="form-label">Binance API Key</label>
-          <input type="text" className="form-control" id="apiKey" name="apiKey" onChange={handleChange} value={user.apiKey} placeholder="Enter Binance API Key" />
+          <input type="text" className="form-control" id="apiKey" name="apiKey" required onChange={handleChange} value={user.apiKey} placeholder="Enter Binance API Key" />
         </div>
 
         {/* Binance API Secret */}
         <div className="mb-3">
           <label htmlFor="apiSecret" className="form-label">Binance API Secret</label>
-          <input type="password" className="form-control" id="apiSecret" name="apiSecret" onChange={handleChange} value={user.apiSecret} placeholder="Enter Binance API Secret" />
+          <input type="password" className="form-control" id="apiSecret" required name="apiSecret" onChange={handleChange} value={user.apiSecret} placeholder="Enter Binance API Secret" />
         </div>
 
         {/* Submit */}

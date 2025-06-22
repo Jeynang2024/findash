@@ -1,18 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import Chart from 'react-apexcharts';
 
-const fetchKlines = async (symbol = 'BTCUSDT', interval = '1h', limit = 500) => {
-  try {
-    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`);
-    const data = await res.json();
-    return data.map(c => ({
-      time: c[0],
-      close: parseFloat(c[4]),
-    }));
-  } catch (error) {
-    console.error('Error fetching klines:', error);
-    return [];
+
+const toUnixTimestamp = (datetimeStr) => new Date(datetimeStr).getTime();
+
+const IST_OFFSET = 5.5 * 60 * 60 * 1000;  // 5 hours 30 minutes = 19800000 ms
+
+const fetchKlines = async (symbol = 'BTCUSDT', interval = '1h', limit = 500,startTime,endTime) => {
+  const params = new URLSearchParams({ symbol, interval, limit: limit });
+  console.log(startTime, endTime);
+  if (startTime) {
+    const startUTC = toUnixTimestamp(startTime)- IST_OFFSET;
+    params.append('startTime', startUTC);
+    console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
   }
+  
+  if (endTime) {
+    const endUTC = toUnixTimestamp(endTime)- IST_OFFSET;
+    params.append('endTime', endUTC);
+    console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
+  }
+
+  //const url = `https://api.binance.com/api/v3/klines?${params}`;
+  const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
+  const data = await res.json();
+  return data.map(c => ({
+    time: c[0] + IST_OFFSET,
+    close: parseFloat(c[4]),
+  }));
 };
 
 const calculateEMA = (data, period) => {
@@ -28,15 +43,15 @@ const calculateEMA = (data, period) => {
   return ema;
 };
 
-const calculateMACD = (closes, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9) => {
-  if (!closes || closes.length < slowPeriod) return { macd: [], signal: [], histogram: [] };
+const calculateMACD = (closes,timestamps, fastPeriod = 12, slowPeriod = 26, signalPeriod = 9) => {
+  if (!closes || closes.length < slowPeriod+signalPeriod) return { macd: [], signal: [], histogram: [] ,timestamps: [] };
 
   const fastEMA = calculateEMA(closes, fastPeriod);
   const slowEMA = calculateEMA(closes, slowPeriod);
   
   // Align the EMAs by their lengths
-  const startIndex = slowEMA.length - fastEMA.length;
-  const macd = fastEMA.map((val, i) => val - slowEMA[i + startIndex]);
+  const offset = slowEMA.length - fastEMA.length;
+  const macd = fastEMA.map((val, i) => val - slowEMA[i + offset]);
   
   const signal = calculateEMA(macd, signalPeriod);
   const histogram = macd.map((val, i) => val - (signal[i] || 0));
@@ -50,13 +65,19 @@ const calculateMACD = (closes, fastPeriod = 12, slowPeriod = 26, signalPeriod = 
 };
 
 const MACDChart = () => {
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [interval, setInterval] = useState('1h');
   const [fastPeriod, setFastPeriod] = useState(12);
   const [slowPeriod, setSlowPeriod] = useState(26);
   const [signalPeriod, setSignalPeriod] = useState(9);
-  const [series, setSeries] = useState([]);
-  const [loading, setLoading] = useState(false);
+const [series, setSeries] = useState([
+    { name: 'MACD', type: 'line', data: [] },
+    { name: 'Signal', type: 'line', data: [] },
+    { name: 'Histogram', type: 'bar', data: [] }
+  ]);
+    const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [chartKey, setChartKey] = useState(0); // Key to force chart re-render
 
@@ -64,7 +85,11 @@ const MACDChart = () => {
     setLoading(true);
     setError(null);
     try {
-      const raw = await fetchKlines(symbol, interval);
+      if (startTime && endTime && toUnixTimestamp(startTime) >= toUnixTimestamp(endTime)) {
+        setError('End time must be after start time');
+        return;
+      }
+      const raw = await fetchKlines(symbol, interval, 700, startTime, endTime);
       if (raw.length === 0) {
         setError('No data received from API');
         return;
@@ -73,30 +98,34 @@ const MACDChart = () => {
       const closes = raw.map(r => r.close);
       const times = raw.map(r => r.time);
 
-      const { macd, signal, histogram, startIndex } = calculateMACD(
+      const { macd, signal, histogram, timestamps } = calculateMACD(
         closes, 
+        times,
         fastPeriod, 
         slowPeriod, 
         signalPeriod
       );
-
-      const labels = times.slice(startIndex);
+ if (macd.length === 0) {
+        setError(`Need at least ${slowPeriod + signalPeriod} data points`);
+        return;
+      }
+      //const labels = times.slice(startIndex);
 
       setSeries([
         {
           name: 'MACD',
           type: 'line',
-          data: macd.map((val, i) => ({ x: labels[i], y: val })),
+          data: macd.map((val, i) => ({ x: timestamps[i], y: val })),
         },
         {
           name: 'Signal',
           type: 'line',
-          data: signal.map((val, i) => ({ x: labels[i], y: val })),
+          data: signal.map((val, i) => ({ x: timestamps[i], y: val })),
         },
         {
           name: 'Histogram',
           type: 'bar',
-          data: histogram.map((val, i) => ({ x: labels[i], y: val })),
+          data: histogram.map((val, i) => ({ x: timestamps[i], y: val })),
         },
       ]);
       
@@ -112,13 +141,18 @@ const MACDChart = () => {
 
   // Reload data when any parameter changes
   useEffect(() => {
+    const timer = setTimeout(loadData, 300);
+    return () => clearTimeout(timer);
+  }, [symbol, interval, fastPeriod, slowPeriod, signalPeriod, startTime, endTime]);
+  
+  /*useEffect(() => {
     const timer = setTimeout(() => {
       loadData();
     }, 300); // Small debounce to avoid rapid API calls
     
     return () => clearTimeout(timer);
-  }, [symbol, interval, fastPeriod, slowPeriod, signalPeriod]);
-
+  }, [symbol, interval, fastPeriod, slowPeriod, signalPeriod,startTime,endTime]);
+*/
   const options = {
     chart: {
       id: 'macd-chart',
@@ -278,6 +312,32 @@ const MACDChart = () => {
             onChange={e => setSignalPeriod(Math.max(1, +e.target.value))} 
           />
         </div>
+        <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Start time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+    type="datetime-local"
+          placeholder="start time"
+          value={startTime}
+          onChange={e => setStartTime(e.target.value)}
+          
+        /></div>
+        <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">End time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+    type="datetime-local"
+          placeholder="end time"
+          value={endTime}
+          onChange={e => setEndTime(e.target.value)}
+          
+        /></div>
         
         <button 
           className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800 flex items-center"

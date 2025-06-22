@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,memo } from 'react';
 import axios from 'axios';
 import PriceTable from '../components/PriceTable';
 import useBinanceWebSocket from './useWebSocket';
 import '../styles/home.css';
+const BE = import.meta.env.VITE_BE;
+
 function Dashboard() {
   const [prices, setPrices] = useState([]);
   const [liveData, setLiveData] = useState({});
@@ -28,7 +30,7 @@ const symbols = [
     try {
       const responses = await Promise.all(
         symbols.map(symbol =>
-          axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`)
+          axios.get(`${BE}/api/binance/ticker?symbol=${symbol}`)
         )
       );
 
@@ -80,4 +82,4 @@ const connectionStatus = wsConnections.some(ws => ws.status === 'disconnected')
   );
 }
 
-export default Dashboard;
+export default memo(Dashboard);

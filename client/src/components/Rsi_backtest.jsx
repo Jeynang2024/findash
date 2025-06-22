@@ -1,16 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import Chart from 'react-apexcharts';
 import "../styles/header.css";
-const fetchKlines = async (symbol = 'BTCUSDT', interval = '1h', limit = 500) => {
-  const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`);
+
+const toUnixTimestamp = (datetimeStr) => new Date(datetimeStr).getTime();
+
+const IST_OFFSET = 5.5 * 60 * 60 * 1000;  // 5 hours 30 minutes = 19800000 ms
+
+const fetchKlines = async (symbol = 'BTCUSDT', interval = '1h', limit = 500,startTime,endTime) => {
+  const params = new URLSearchParams({ symbol, interval, limit: limit });
+  console.log(startTime, endTime);
+  if (startTime) {
+    const startUTC = toUnixTimestamp(startTime)- IST_OFFSET;
+    params.append('startTime', startUTC);
+    console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
+  }
+  
+  if (endTime) {
+    const endUTC = toUnixTimestamp(endTime)- IST_OFFSET;
+    params.append('endTime', endUTC);
+    console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
+  }
+
+  //const url = `https://api.binance.com/api/v3/klines?${params}`;
+  const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
   const data = await res.json();
   return data.map(c => ({
-    time: c[0],
+    x: c[0] + IST_OFFSET,
     close: parseFloat(c[4]),
   }));
 };
 
+
+
+
 const calculateRSI = (closes, period) => {
+  if (!closes || closes.length <= period) {
+    alert(`Need at least ${period + 1} data points to calculate RSI, got ${closes.length}`);
+    console.error('Not enough data to calculate RSI');
+    return [];
+  }
   const rsi = [];
   let prevAvgGain = 0;
   let prevAvgLoss = 0;
@@ -28,7 +56,7 @@ const calculateRSI = (closes, period) => {
 
   // First RSI value
   const rs = prevAvgGain / (prevAvgLoss || 1);
-  rsi.push({ x: closes[period].time, y: 100 - 100 / (1 + rs) });
+  rsi.push({ x: closes[period].x, y: 100 - 100 / (1 + rs) });
 
   // Subsequent RSI values
   for (let i = period + 1; i < closes.length; i++) {
@@ -44,13 +72,15 @@ const calculateRSI = (closes, period) => {
     prevAvgLoss = (prevAvgLoss * (period - 1) + currentLoss) / period;
 
     const rs = prevAvgGain / (prevAvgLoss || 1);
-    rsi.push({ x: closes[i].time, y: 100 - 100 / (1 + rs) });
+    rsi.push({ x: closes[i].x, y: 100 - 100 / (1 + rs) });
   }
 
   return rsi;
 };
 
 const RSIChart = () => {
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [interval, setInterval] = useState('1h');
   const [period, setPeriod] = useState(14);
@@ -62,8 +92,17 @@ const RSIChart = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const raw = await fetchKlines(symbol, interval);
+      const raw = await fetchKlines(symbol, interval, 1000, startTime, endTime);
+    //console.log('Fetched data:', raw);  // Verify structure
+    
+    if (raw.length <= period) {
+      console.error(`Need at least ${period+1} data points, got ${raw.length}`);
+      return;
+    }
+
+      //const raw = await fetchKlines(symbol, interval);
       const rsi = calculateRSI(raw, period);
+      //console.log('Calculated RSI:', rsi);  // Verify RSI calculation
       setData(rsi);
     } catch (error) {
       console.error('Error loading data:', error);
@@ -74,7 +113,7 @@ const RSIChart = () => {
 
   useEffect(() => {
     loadData();
-  }, [interval, symbol, period, overbought, oversold]);
+  }, [interval, symbol, period, overbought, oversold,startTime,endTime]);
 
   const options = {
     chart: {
@@ -250,6 +289,35 @@ const RSIChart = () => {
           placeholder="Oversold" 
         />
         </div>
+
+<div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Start time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+    type="datetime-local"
+          placeholder="start time"
+          value={startTime}
+          onChange={e => setStartTime(e.target.value)}
+          
+        /></div>
+
+        <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">End time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+    type="datetime-local"
+          placeholder="end time"
+          value={endTime}
+          onChange={e => setEndTime(e.target.value)}
+          
+        /></div>
+
         <div className="flex-1 min-w-[120px] flex items-end">
         <button 
           className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800"

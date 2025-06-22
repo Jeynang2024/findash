@@ -1,9 +1,9 @@
 // src/components/Footer.jsx
-import React from "react";
+import React, { memo } from "react";
 import { Link } from "react-router-dom";
 import "../styles/footer.css"; // Assuming you have a global CSS file for custom styles
 
-export default function Footer() {
+function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container ">
@@ -14,4 +14,4 @@ export default function Footer() {
       </div>
     </footer>
   );
-}
+}export default memo(Footer);

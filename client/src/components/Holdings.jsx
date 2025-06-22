@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,memo } from 'react';
 import Chart from 'react-apexcharts';
 import '../styles/holdings.css';
 import axios from 'axios'; // Import your custom styles
@@ -35,6 +35,7 @@ const token = localStorage.getItem('token');
           onBalancesUpdate(res.data);
         }
       } catch (error) {
+        alert('Please Login to get see your holdings');
 console.error('Full error details:', {
     message: error.message,
     status: error.response?.status,
@@ -112,4 +113,4 @@ console.error('Full error details:', {
   );
 };
 
-export default HoldingsChart;
+export default memo(HoldingsChart);

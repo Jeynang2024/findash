@@ -4,7 +4,6 @@ import Binance from 'binance-api-node';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
-import About from './pages/About';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Footer from './components/Footer';
@@ -25,7 +24,6 @@ function App() {
       <div className="container mt-2 ">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
         <Route
           path="/login"
           element={ <Login />}

@@ -1,17 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import Chart from 'react-apexcharts';
 import "../styles/header.css";
+const IST_OFFSET = 5.5 * 60 * 60 * 1000;  // 5 hours 30 minutes = 19800000 ms
+
+
+const toUnixTimestamp = (datetimeStr) => new Date(datetimeStr).getTime();
+
+
+
+const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime,endTime) => {
+  const params = new URLSearchParams({ symbol, interval, limit: limit });
+  console.log(startTime, endTime);
+  if (startTime) {
+    const startUTC = toUnixTimestamp(startTime)- IST_OFFSET;
+    params.append('startTime', startUTC);
+    console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
+  }
+  
+  if (endTime) {
+    const endUTC = toUnixTimestamp(endTime)- IST_OFFSET;
+    params.append('endTime', endUTC);
+    console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
+  }
+
+  const url = `https://api.binance.com/api/v3/klines?${params}`;
+  console.log("Final API URL:", url);
+  const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
+  const data = await res.json();
+if (data.length > 0) {
+    const firstTime = new Date(data[0][0]).toISOString();
+    const lastTime = new Date(data[data.length - 1][0]).toISOString();
+    console.log(`Fetched ${data.length} candles from ${firstTime} to ${lastTime}`);
+  } else {
+    console.log("No data returned from Binance.");
+  }
+  return data.map(c => ({
+    x: c[0]+IST_OFFSET,
+    y: [+c[1], +c[2], +c[3], +c[4]],
+  }));
+};
+
+
+/*
 const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime) => {
   const params = new URLSearchParams({ symbol, interval, limit: limit.toString() });
   if (startTime) params.append('startTime', startTime.toString());
   const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
   const data = await res.json();
   return data.map(c => ({
-    x: c[0],
+    x: c[0]+IST_OFFSET,
     y: [+c[1], +c[2], +c[3], +c[4]], // OHLC
   }));
 };
-
+*/
 const ema = (arr, period) => {
   if (arr.length < period) return [];
   const k = 2 / (period + 1);
@@ -29,6 +70,8 @@ const ema = (arr, period) => {
 };
 
 const EMAChart = () => {
+   const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [interval, setInterval] = useState('1m');
   const [shortEMA, setShortEMA] = useState(20);
@@ -36,11 +79,22 @@ const EMAChart = () => {
   const [candles, setCandles] = useState([]);
   const [signals, setSignals] = useState([]);
   const [loading, setLoading] = useState(false);
+  const chartRef = useRef(null);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const data = await fetchKlines(symbol, interval, 1000, Date.now() - 24 * 60 * 60 * 1000);
+
+      const data = await fetchKlines(symbol, interval, 1000, startTime,endTime);
+       if (chartRef.current) {
+        chartRef.current.updateOptions({
+          xaxis: {
+            min: data.length ? data[0].x : null,
+            max: data.length ? data[data.length - 1].x : null
+          }
+        }, true); // The second argument forces a redraw
+      }
+      //const data = await fetchKlines(symbol, interval, 1000, Date.now() - 24 * 60 * 60 * 1000);
       setCandles(data);
       const closes = data.map(c => c.y[3]); // Close prices
 
@@ -86,7 +140,7 @@ const EMAChart = () => {
 
   useEffect(() => {
     loadData();
-  }, [interval, symbol, shortEMA, longEMA]);
+  }, [interval, symbol, shortEMA, longEMA, startTime, endTime]);
 
   const options = {
     chart: { 
@@ -180,6 +234,43 @@ const EMAChart = () => {
           onChange={e => setLongEMA(Number(e.target.value))}
         />
         </div>
+
+
+        <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Start time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+           type="datetime-local"
+          placeholder="start time"
+          value={startTime}
+          onChange={e => setStartTime(e.target.value)}
+          
+        /></div>
+<div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">End time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+    type="datetime-local"
+          placeholder="start time"
+          value={endTime}
+          onChange={e => setEndTime(e.target.value)}
+          
+        /></div>
+
+
+
+
+
+
+
+
+
                 <div className="flex-1 min-w-[120px] flex items-end">
         <button
           className="bg-blue-600 h-[40px]  px-4 py-2 rounded hover:bg-blue-500 disabled:bg-blue-800 flex items-center"

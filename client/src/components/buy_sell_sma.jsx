@@ -1,21 +1,72 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,useCallback,useRef} from 'react';
 import Chart from 'react-apexcharts';
 import "../styles/header.css";
-const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime) => {
-  const params = new URLSearchParams({ symbol, interval, limit: limit.toString() });
-  if (startTime) params.append('startTime', startTime.toString());
+/*const toUnixTimestamp = (datetimeStr) => {
+  if (!datetimeStr) return undefined;
+  
+  // Parse as local time, then convert to UTC timestamp
+  const date = new Date(datetimeStr);
+  return Date.UTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds()
+  );
+};
+const toUnixTimestamp = (datetimeStr) => {
+  const [datePart, timePart] = datetimeStr.split("T");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute] = timePart.split(":").map(Number);
+  return Date.UTC(year, month - 1, day, hour, minute);
+};*/
+const toUnixTimestamp = (datetimeStr) => new Date(datetimeStr).getTime();
+
+const IST_OFFSET = 5.5 * 60 * 60 * 1000;  // 5 hours 30 minutes = 19800000 ms
+
+
+const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime,endTime) => {
+  const params = new URLSearchParams({ symbol, interval, limit: limit });
+  console.log(startTime, endTime);
+  if (startTime) {
+    const startUTC = toUnixTimestamp(startTime)- IST_OFFSET;
+    params.append('startTime', startUTC);
+    console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
+  }
+  
+  if (endTime) {
+    const endUTC = toUnixTimestamp(endTime)- IST_OFFSET;
+    params.append('endTime', endUTC);
+    console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
+  }
+
+  const url = `https://api.binance.com/api/v3/klines?${params}`;
+  console.log("Final API URL:", url);
   const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
   const data = await res.json();
+if (data.length > 0) {
+    const firstTime = new Date(data[0][0]).toISOString();
+    const lastTime = new Date(data[data.length - 1][0]).toISOString();
+    console.log(`Fetched ${data.length} candles from ${firstTime} to ${lastTime}`);
+  } else {
+    console.log("No data returned from Binance.");
+  }
   return data.map(c => ({
-    x: c[0],
+    x: c[0]+IST_OFFSET,
     y: [+c[1], +c[2], +c[3], +c[4]],
   }));
 };
+
+
 
 const sma = (arr, N) =>
   arr.length >= N ? arr.slice(-N).reduce((a, v) => a + v, 0) / N : null;
 
 const ApexBacktestChart = () => {
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+
   const [symbol, setSymbol] = useState('BTCUSDT');
   const [interval, setInterval] = useState('1m');
   const [shortSMA, setShortSMA] = useState(20);
@@ -23,11 +74,34 @@ const ApexBacktestChart = () => {
   const [candles, setCandles] = useState([]);
   const [signals, setSignals] = useState([]);
   const [loading, setLoading] = useState(false);
+  const chartRef = useRef(null);
+
+
+
+
+
+
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const data = await fetchKlines(symbol, interval, 1000, Date.now() - 24 * 60 * 60 * 1000);
+     const startTimestamp = startTime ? new Date(startTime).getTime() : undefined;
+    const endTimestamp = endTime ? new Date(endTime).getTime() : undefined;
+    console.log("Start Timestamp:", startTimestamp, "End Timestamp:", endTimestamp);
+    if (startTimestamp && endTimestamp && startTimestamp >= endTimestamp) {
+      alert("End time must be after start time");
+      return;
+    }
+
+      const data = await fetchKlines(symbol, interval, 1000, startTime,endTime);
+       if (chartRef.current) {
+        chartRef.current.updateOptions({
+          xaxis: {
+            min: data.length ? data[0].x : null,
+            max: data.length ? data[data.length - 1].x : null
+          }
+        }, true); // The second argument forces a redraw
+      }
       setCandles(data);
       const s = [];
       const closes = data.map(c => c.y[3]);
@@ -67,7 +141,8 @@ const ApexBacktestChart = () => {
 
   useEffect(() => {
     loadData();
-  }, [interval, symbol, shortSMA, longSMA]);
+
+  }, [interval, symbol, shortSMA, longSMA, startTime,endTime]);
 
   const options = {
     chart: { 
@@ -75,6 +150,9 @@ const ApexBacktestChart = () => {
       height: 350, 
       background: '#1e1b2e', 
       foreColor: '#f1f5f9',
+      zoom: { enabled: true, type: 'x', autoScaleYaxis: true, mouseWheelZoom: true },
+      toolbar: { tools: { pan: true, zoom: true, reset: true } },
+      
       animations: {
         enabled: true,
         easing: 'easeinout',
@@ -107,7 +185,7 @@ const ApexBacktestChart = () => {
   };
 
   const series = [{ data: candles }];
-
+console.log("startTime:", startTime, "endTime:", endTime);
   return (
     <div className="p-4 gradient-border text-white ">
       <h2 className="text-xl font-semibold mb-4 text-gradient">Backtest SMA Strategy</h2>
@@ -169,6 +247,36 @@ const ApexBacktestChart = () => {
           min={shortSMA + 1}
         />
         </div>
+<div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Start time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+    type="datetime-local"
+          placeholder="start time"
+          value={startTime}
+          onChange={e => setStartTime(e.target.value)}
+          
+        /></div>
+        <div className="flex-1 min-w-[120px]">
+
+                  <label className="block h-[40px] text-sm text-gray-400 mb-1">Start time</label>
+
+        <input
+        style={{ backgroundColor: '#1e1b2e	' }} 
+          className="p-2 w-full  rounded border border-slate-700"
+    type="datetime-local"
+          placeholder="end time"
+          value={endTime}
+          onChange={e => setEndTime(e.target.value)}
+          
+        /></div>
+
+
+
+
                         <div className="flex-1 min-w-[120px] flex items-end">
 
         <button

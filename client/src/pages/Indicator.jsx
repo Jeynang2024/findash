@@ -1,58 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import Chart from 'react-apexcharts';
+import React, { useEffect, useState,useCallback,memo } from 'react';
 import Chartboard from './Chartboard'; 
 import Lashboard from './Dashboard' 
 import HoldingsChart from '../components/Holdings';
-import { Link } from 'react-router-dom';
 import axios from "axios"
+import dotenv from 'dotenv';
+import { useNavigate } from 'react-router-dom';
+dotenv.config();
 import "../styles/header.css";
-const authRequest = () => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    // Handle missing token (redirect to login)
-    window.location.href = '/login';
-    throw new Error('No authentication token found');
-  }
-  return {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    }
-  };
-};
+
 const Dashboard = () => {
+
+
+   const navigate = useNavigate();
+
+  useEffect(()=>{
+      const token=localStorage.getItem("token");
+      if(!token){
+        navigate("/login", { replace: true });
+        return;
+      }}
+    ,[])
 const [totalBalance, setTotalBalance] = useState(0);
 const [balances, setBalances] = useState([]);
 const [profit ,setProfit]=useState([0]);
-    const BE = "http://localhost:5001";
+const BE = import.meta.env.VITE_BE;
+console.log('Backend URL:', BE);
 
- const handleBalancesUpdate = (fetchedBalances) => {
+    //const BE = "http://localhost:5001";
+const handleBalancesUpdate = useCallback((fetchedBalances) => {
     setBalances(fetchedBalances);
-    
-    // Find USDT balance
     const usdtBalance = fetchedBalances.find(b => b.asset === 'USDT');
     if (usdtBalance) {
       setTotalBalance(parseFloat(usdtBalance.free) + parseFloat(usdtBalance.locked));
     }
-  };
+  }, []);
+
+  const checkAuth = useCallback(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login", { replace: true });
+      return false;
+    }
+    return true;
+  }, [navigate]);
+
   useEffect(() => {
+    if (!checkAuth()) return;
   const fetchProfit = async () => {
 const token=localStorage.getItem("token");
+console.log('Token: here', token);
     if(!token){
       navigate("/login", { replace: true });
       return;
     }    
     try {
-      const { data } = await axios.get(`${BE}/profit`, authRequest())
-      setProfit(data.profit)
+        const { data } = await axios.get(`${BE}/profit`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+              setProfit(data.profit)
     } catch (error) {
       console.error('Error fetching profit:', error)
       // Optionally, set an error state here
+      if (error.response?.status === 401) {
+          navigate("/login", { replace: true });
+        }
     }
   }
 
   fetchProfit()
-}, [])
+}, [BE, checkAuth, navigate]);
 
 
   // Format balance with commas
@@ -115,7 +134,7 @@ const token=localStorage.getItem("token");
                 className=" rounded-xl p-4">
                <p className="text-sm text-gray-400">Profit</p>
                <h2 className="text-xl font-semibold">
-               { `$${profit}` }
+               { `$${formatBalance(profit)}` }
                 </h2>
                 </div>
               <Lashboard/>
@@ -166,4 +185,4 @@ className="mt-3  p-4 rounded-xl overflow-x-auto">
   );
 };
 
-export default Dashboard;
+export default memo(Dashboard);
