@@ -234,7 +234,7 @@ app.get(
 app.get('/api/binance/ticker', async (req, res) => {
   try {
     const { symbol } = req.query;
-    const response = await axios.get(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
+    const response = await axios.get(`https://data-api.binance.vision/api/v3/ticker/24hr?symbol=${symbol}`);
     res.json(response.data);
   } catch (err) {
     console.error('Binance proxy error:', err.message);
