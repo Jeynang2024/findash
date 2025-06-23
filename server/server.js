@@ -61,12 +61,11 @@ app.get('/account', passport.authenticate('jwt', { session: false }), async (req
 
 app.get('/api/btc-rates', async (req, res) => {
   try {
-    const response =  await axios.get(
-      'https://min-api.cryptocompare.com/data/price',
-      { params: { fsym: 'BTC', tsyms: 'USD,EUR,GBP' } }
+    const response = await axios.get(
+      'https://api.coinbase.com/v2/exchange-rates',
+      { params: { currency: 'BTC' } }
     );
-    const rates = await response.json();
-    res.json(rates);
+    res.json(resp.data.data.rates);
   } catch (err) {
     console.error('Error fetching CryptoCompare data:', err);
     res.status(500).json({ error: 'Failed to fetch conversion rates' });
