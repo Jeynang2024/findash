@@ -65,7 +65,7 @@ app.get('/api/btc-rates', async (req, res) => {
       'https://api.coinbase.com/v2/exchange-rates',
       { params: { currency: 'BTC' } }
     );
-    res.json(resp.data.data.rates);
+    res.json(response.data.data.rates);
   } catch (err) {
     console.error('Error fetching CryptoCompare data:', err);
     res.status(500).json({ error: 'Failed to fetch conversion rates' });
