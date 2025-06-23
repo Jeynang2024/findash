@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/home.css";
 const BE = import.meta.env.VITE_BE;
+import bitcoinImg from '../images/bitcoin.avif';
 
 export default function Home() {
   const [ticker, setTicker] = useState({});
@@ -55,7 +56,7 @@ export default function Home() {
   <div className="home-container main_cover" style={{backgroundColor: "rgba(73, 56, 97, 0.3)"}}>
      <div className="list">
       <div className="item">
-        <img src="./src/images/bitcoin.avif" alt="hidden love"/>
+        <img src={bitcoinImg} alt="hidden love"/>
         <div className="content">
           <div className="title text-gradient">TRADE LIVE</div>
           <div className="releasedate">Test Your Edge</div>
