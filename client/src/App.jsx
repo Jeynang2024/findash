@@ -17,7 +17,9 @@ function App() {
       <Header />
       <div className="container mt-2 ">
         <Routes>
-          <Route path="/" element={<Home />} />
+             <Route path="/" element={<Home />} />
+
+          <Route path="/findash" element={<Home />} />
         <Route
           path="/login"
           element={ <Login />}
