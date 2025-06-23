@@ -61,8 +61,9 @@ app.get('/account', passport.authenticate('jwt', { session: false }), async (req
 
 app.get('/api/btc-rates', async (req, res) => {
   try {
-    const response = await fetch(
-      'https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,EUR,GBP'
+    const response =  await axios.get(
+      'https://min-api.cryptocompare.com/data/price',
+      { params: { fsym: 'BTC', tsyms: 'USD,EUR,GBP' } }
     );
     const rates = await response.json();
     res.json(rates);
