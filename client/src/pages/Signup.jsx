@@ -1,5 +1,7 @@
 import React,{useState} from "react";
 import { useNavigate } from "react-router-dom";
+const BE = import.meta.env.VITE_BE;
+
 function Signup() { 
    const [user,setUser] = useState({
         username: "",
@@ -25,7 +27,7 @@ function Signup() {
         
         console.log("User signed up:", user);
         try{
-            const response = await fetch("http://localhost:5001/api/auth/signup", {
+            const response = await fetch(`${BE}/api/auth/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -35,15 +37,13 @@ function Signup() {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Signup successful:", data);
-                localStorage.setItem("token", data.token); // Store token in localStorage
+                localStorage.setItem("token", data.token);
                 setToken(data.token);
-                navigate("/dashboard"); // Redirect to home page on success
-                // Redirect or show success message
+                navigate("/dashboard"); 
             } else {
                 const errorData = await response.json();
                 console.error("Signup failed:", errorData);
-                navigate("/signup"); // Redirect to login page on error
-                // Show error message to user
+                navigate("/signup");
             }
 
 

@@ -3,7 +3,7 @@ import passport from 'passport';
 import pool from '../../db.js';
 const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.SECRET_KEY || 'binance', // Use environment variable in production
+  secretOrKey: process.env.SECRET_KEY || 'binance',
 };
 passport.use("jwt",new JwtStrategy(opts, async (jwtPayload, done) => {
   try {
@@ -11,12 +11,12 @@ passport.use("jwt",new JwtStrategy(opts, async (jwtPayload, done) => {
     const user = result.rows[0];
 
     if (user) {
-      return done(null, user); // User found, pass user object to next middleware
+      return done(null, user);
     } else {
-      return done(null, false); // User not found
+      return done(null, false); 
     }
   } catch (error) {
-    return done(error, false); // Error occurred during database query
+    return done(error, false); 
   }
 }));
 export default passport;

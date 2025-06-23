@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "../styles/home.css";
+const BE = import.meta.env.VITE_BE;
 
 export default function Home() {
   const [ticker, setTicker] = useState({});
   const [rates, setRates] = useState({});
 
   useEffect(() => {
-    // Binance WebSocket: price, change, high, low
     const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker");
     ws.onmessage = (e) => {
       const d = JSON.parse(e.data);
@@ -21,10 +21,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    // Poll CoinDesk for conversion rates
    const fetchRates = async () => {
   try {
-    const res = await fetch("http://localhost:5001/api/btc-rates");
+    const res = await fetch(`${BE}/api/btc-rates`);
     const text = await res.text();
 
     if (!res.ok) {
@@ -32,8 +31,7 @@ export default function Home() {
       return;
     }
 
-    const data = JSON.parse(text); // data = { USD: 12345.67, EUR: 11234.56, GBP: 9876.54 }
-
+    const data = JSON.parse(text); 
     setRates({
       USD: data.USD,
       EUR: data.EUR,

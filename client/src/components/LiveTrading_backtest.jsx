@@ -8,7 +8,6 @@ dotenv.config();
  const authRequest = () => {
   const token = localStorage.getItem('token');
   if (!token) {
-    // Handle missing token (redirect to login)
     window.location.href = '/login';
     throw new Error('No authentication token found');
   }
@@ -74,11 +73,9 @@ const placeOrder = async () => {
       quantity
     }, authRequest());
 
-    // Update UI with the response
     setStatus(`Order placed successfully. ID: ${response.data.orderId}`);
     fetchTrades(); // Refresh trades list
     
-    // Optional: Update local state with the new trade
     setTrades(prev => [{
       symbol,
       side,

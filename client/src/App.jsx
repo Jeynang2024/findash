@@ -1,21 +1,15 @@
 // src/App.jsx
-import { useState, useEffect } from 'react';
-import Binance from 'binance-api-node';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {  Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Footer from './components/Footer';
-import Dashboard from './pages/Dashboard';
 import Indicator from './pages/Indicator';
-import Chartboard from './pages/Chartboard';
-import Historical from "./components/buy_sell_sma"
 import BacktestDashboard from './pages/Backtest';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 function App() {
-  const [ticker, setTicker] = useState({});
 
 
   return (

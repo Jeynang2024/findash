@@ -1,9 +1,7 @@
 import express from 'express';
-import pool from "../db.js"; // Adjust the path as necessary
+import pool from "../db.js"; 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import passport from './middleware/passportconfig.js';
- // Adjust the path as necessary
 import dotenv from 'dotenv';
 dotenv.config();
 const router = express.Router();
@@ -58,6 +56,5 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// In your auth routes file
 
 export default router;

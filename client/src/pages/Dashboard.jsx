@@ -24,7 +24,6 @@ const symbols = [
   'LTCUSDT'
 ];
 
-  // WebSocket connections for all three pairs
    useEffect(() => {
   const fetchData = async () => {
     try {
@@ -47,12 +46,11 @@ const symbols = [
   };
 
   fetchData();
-  const interval = setInterval(fetchData, 1000); // poll every 5 seconds (reduce frequency for 8 coins)
+  const interval = setInterval(fetchData, 1000); 
   return () => clearInterval(interval);
 }, []);
 
 
-  // Merge initial data structure with live updates
   const display = prices.map(p => {
     const live = liveData[p.pair] || {};
     return {
@@ -69,7 +67,6 @@ const connectionStatus = wsConnections.some(ws => ws.status === 'disconnected')
  
   return (
    <div className="flex h-[70vh]  text-white">
-  {/* Left Sidebar */}
   <div className="w-full p-3 overflow-y-auto  backdrop-blur-md border-r border-gray-700">
     
     <PriceTable prices={display} />

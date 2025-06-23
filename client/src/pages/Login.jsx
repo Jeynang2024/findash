@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const BE = import.meta.env.VITE_BE;
 
 function Login(){
     const [user, setUser] = useState({
@@ -18,9 +19,9 @@ function Login(){
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("User logged in:", user);
+        //console.log("User logged in:", user);
         try {
-            const response = await fetch("http://localhost:5001/api/auth/login", {
+            const response = await fetch(`${BE}/api/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -29,16 +30,14 @@ function Login(){
             });
             if (response.ok) {
                 const data = await response.json();
-                console.log("Login successful:", data);
-                // Store token or user data as needed
-                localStorage.setItem("token", data.token); // Store token in localStorage
+                //console.log("Login successful:", data);
+                localStorage.setItem("token", data.token); 
                 setToken(data.token);
-                navigate("/dashboard"); // Redirect to home page on success
+                navigate("/dashboard"); 
             } else {
                 const errorData = await response.json();
                 console.error("Login failed:", errorData);
-                // Show error message to user
-                navigate("/login"); // Redirect to login page on error
+                navigate("/login"); 
             }
         } catch (err) {
             console.error("Error during login:", err);

@@ -3,14 +3,12 @@ import "../styles/header.css";
 import { FiSettings } from 'react-icons/fi';
 import SMAChart from '../components/buy_sell_sma';
 import EMAChart from '../components/Ema_backtest';
-import MACDChart from '../components/Mcad_backtest';
-import News from '../components/news';
+import News from '../components/McadBt';
 import RSIChart from '../components/Rsi_backtest';
 import LiveTrading from "../components/LiveTrading_backtest"
 const IndicatorDashboard = () => {
   const [indicator, setIndicator] = useState('SMA');
   const [symbol, setSymbol] = useState('BTCUSDT');
-  const [interval, setInterval] = useState('1h');
 
  useEffect(()=>{
     const token=localStorage.getItem("token");

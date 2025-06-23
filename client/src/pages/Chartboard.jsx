@@ -65,7 +65,6 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
             <button onClick={fetchData} className="bg-emerald-600 px-4 py-2 rounded text-white">{loading ? "Loading..." : "Refresh"}</button>
           </div>
          <div className="overflow-hidden rounded-lg">
-          {/* Chart Rendered Here */}
           <BaseCandleChart  data={[{
           name: symbol,
           type: "candlestick",
@@ -83,20 +82,20 @@ function CoinChart({ initialSymbol = "BTCUSDT", initialInterval = "1h", start, e
     type: "datetime",
     labels: {
       style: {
-        colors: "#94A3B8" // x-axis label color
+        colors: "#94A3B8" 
       }
     }
   },
   yaxis: {
     labels: {
       style: {
-        colors: "#94A3B8" // 🌟 <- Y-axis label color (change to your desired hex code)
+        colors: "#94A3B8"
       }
     },
     title: {
       text: "Price",
       style: {
-        color: "#FACC15" // Optional: title color
+        color: "#FACC15"
       }
     }
   },

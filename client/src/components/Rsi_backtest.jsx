@@ -8,20 +8,19 @@ const IST_OFFSET = 5.5 * 60 * 60 * 1000;  // 5 hours 30 minutes = 19800000 ms
 
 const fetchKlines = async (symbol = 'BTCUSDT', interval = '1h', limit = 500,startTime,endTime) => {
   const params = new URLSearchParams({ symbol, interval, limit: limit });
-  console.log(startTime, endTime);
+  //console.log(startTime, endTime);
   if (startTime) {
     const startUTC = toUnixTimestamp(startTime)- IST_OFFSET;
     params.append('startTime', startUTC);
-    console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
+    //console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
   }
   
   if (endTime) {
     const endUTC = toUnixTimestamp(endTime)- IST_OFFSET;
     params.append('endTime', endUTC);
-    console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
+    //console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
   }
 
-  //const url = `https://api.binance.com/api/v3/klines?${params}`;
   const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
   const data = await res.json();
   return data.map(c => ({

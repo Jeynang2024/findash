@@ -6,12 +6,12 @@ const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
   const smaValues = calculateSMA(closingPrices, period);
 
   const smaSeries = rawData
-    .slice(period - 1) // skip initial undefineds
+    .slice(period - 1) 
     .map((candle, i) => ({
-      x: new Date(candle.time)+ 5.5 * 60 * 60 * 1000, // Adjust for IST offset
-      y: smaValues[i] // now matches with sliced rawData
+      x: new Date(candle.time),
+      y: smaValues[i]
     }))
-    .filter(point => !isNaN(point.y)); // prevent NaNs
+    .filter(point => !isNaN(point.y)); 
   const series = [
     {
       name: `SMA ${period}`,
@@ -34,7 +34,7 @@ const SMAChart = ({ rawData, calculateSMA, period = 14 }) => {
     yaxis: {
  labels: {
     style: { colors: "#CBD5E1" },
-    formatter: (value) => value.toFixed(2)  // Show only 2 decimals
+    formatter: (value) => value.toFixed(2)  
   },
         title: { text: "SMA", style: { color: "#94A3B8" } }
     },

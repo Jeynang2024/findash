@@ -1,32 +1,30 @@
-// server.js (Node + Express)
 import express from 'express';
 import cors from 'cors';
 import fetch from 'node-fetch';
-import authorizationRoutes from './routes/auth.js'; // Adjust the path as necessary
-import Binance from 'binance-api-node'; // Import the default export
+import authorizationRoutes from './routes/auth.js';
+import Binance from 'binance-api-node'; 
 import passport from './routes/middleware/passportconfig.js';
 import { createHmac } from 'node:crypto';
 import axios from "axios"
+import pool from './db.js';
+import dotenv from 'dotenv';
+dotenv.config();
+const port = process.env.SERVER_PORT ;
+
 function signQueryString(queryString, secret) {
   return createHmac('sha256', secret).update(queryString).digest('hex');
 }
 const app = express();
-import pool from './db.js';
 app.use(express.json()); 
 app.use(cors({
-  origin: 'http://localhost:5173',  // React dev server origin
+  origin: 'http://localhost:5173',  
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
 }));
-app.use(passport.initialize()); // Initialize Passport for authentication
+app.use(passport.initialize()); 
 app.options('/{*splat}', cors());
-app.use('/api/auth', authorizationRoutes); // Use the auth routes
+app.use('/api/auth', authorizationRoutes);
 
-
-//const API_KEY ="6fvqCgvHOvSF1F6LboI18hO4qj5bGTjAnzxWhW2Jwv6PCx0KnJEPXe5kbiFTYoDu"
-//const API_SECRET ="uruxesHtN7SJOrfAeQU4xx5PTPsAcQR0EJAPQTQhB8y4pcQFuS9z5gEKOZUvZ6RR"
-
-//const BASE_URL = 'https://testnet.binance.vision';
 
 
 async function getUserBinanceClient(userId) {
@@ -61,13 +59,12 @@ app.get('/account', passport.authenticate('jwt', { session: false }), async (req
   }
 });
 
-// server/routes.js (Express.js)
 app.get('/api/btc-rates', async (req, res) => {
   try {
     const response = await fetch(
       'https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD,EUR,GBP'
     );
-    const rates = await response.json(); // e.g., { USD: 51824.33, EUR: 46087.93, GBP: 37654.12 }
+    const rates = await response.json();
     res.json(rates);
   } catch (err) {
     console.error('Error fetching CryptoCompare data:', err);
@@ -81,7 +78,6 @@ app.post(
     const { symbol, side, quantity } = req.body;
     const userId = req.user.id;
  try{
-    // 1. Fetch user's Binance API credentials
     const user = await pool.query(
         'SELECT api_key, api_secret FROM crypto_users WHERE id = $1',
         [userId]
@@ -108,7 +104,7 @@ const timestamp = Date.now();
         quantity,
         timestamp,
         recvWindow: 5000,
-        newOrderRespType: 'FULL' // To get fills data
+        newOrderRespType: 'FULL'
       };
 
 
@@ -142,7 +138,6 @@ const fills = binanceResponse.data.fills || [];
       [userId, symbol, side, spent, quantity, orderId]
     );
 
-    // 4. Send back the stored order and trade info
    res.json({
         success: true,
         orderId,
@@ -155,16 +150,13 @@ const fills = binanceResponse.data.fills || [];
      }catch (error) {
       console.error('Order placement error:', error);
       
-      // Handle different error types
       let statusCode = 500;
       let errorMessage = 'Failed to place order';
       
       if (error.response) {
-        // Binance API error
         statusCode = error.response.status;
         errorMessage = error.response.data.msg || error.response.data.message;
       } else if (error.request) {
-        // No response received
         errorMessage = 'No response from Binance API';
       }
 
@@ -202,7 +194,6 @@ app.get('/profit', passport.authenticate('jwt', { session: false }), async (req,
 
 
 
-// GET endpoint to fetch trades for authenticated user
 app.get(
   '/trades',
   passport.authenticate('jwt', { session: false }),
@@ -210,17 +201,15 @@ app.get(
     try {
       const userId = req.user.id;
       
-      // Fetch trades from database with pagination
       const { rows } = await pool.query(
         `SELECT id, symbol, side, price, quantity, order_id, created_at 
          FROM trades 
          WHERE user_id = $1 
          ORDER BY created_at DESC 
-         LIMIT 5`, // Adjust limit as needed
+         LIMIT 5`, 
         [userId]
       );
 
-      // Format response
       const trades = rows.map(trade => ({
         id: trade.id,
         symbol: trade.symbol,
@@ -242,7 +231,6 @@ app.get(
     }
   }
 );
-// In your Node.js backend (server.js)
 app.get('/api/binance/ticker', async (req, res) => {
   try {
     const { symbol } = req.query;
@@ -265,7 +253,6 @@ app.get(
   }
 );
 
-// In your auth routes file
 app.get(
   '/backtest',
   passport.authenticate('jwt', {
@@ -277,6 +264,4 @@ app.get(
   }
 );
 
-// Middleware to parse JSON bodies
-
-app.listen(5001, () => console.log('Listening on port 5001'));
+app.listen(port, () => console.log('Listening on port 5001'));

@@ -1,7 +1,7 @@
 import React, { useEffect, useState,useRef } from 'react';
 import Chart from 'react-apexcharts';
 import "../styles/header.css";
-const IST_OFFSET = 5.5 * 60 * 60 * 1000;  // 5 hours 30 minutes = 19800000 ms
+const IST_OFFSET = 5.5 * 60 * 60 * 1000;
 
 
 const toUnixTimestamp = (datetimeStr) => new Date(datetimeStr).getTime();
@@ -10,29 +10,29 @@ const toUnixTimestamp = (datetimeStr) => new Date(datetimeStr).getTime();
 
 const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime,endTime) => {
   const params = new URLSearchParams({ symbol, interval, limit: limit });
-  console.log(startTime, endTime);
+  //console.log(startTime, endTime);
   if (startTime) {
     const startUTC = toUnixTimestamp(startTime)- IST_OFFSET;
     params.append('startTime', startUTC);
-    console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
+    //console.log("startTime (UTC):", startUTC, new Date(startUTC).toISOString());
   }
   
   if (endTime) {
     const endUTC = toUnixTimestamp(endTime)- IST_OFFSET;
     params.append('endTime', endUTC);
-    console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
+    //console.log("endTime (UTC):", endUTC, new Date(endUTC).toISOString());
   }
 
-  const url = `https://api.binance.com/api/v3/klines?${params}`;
-  console.log("Final API URL:", url);
+  //const url = `https://api.binance.com/api/v3/klines?${params}`;
+ // console.log("Final API URL:", url);
   const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
   const data = await res.json();
 if (data.length > 0) {
     const firstTime = new Date(data[0][0]).toISOString();
     const lastTime = new Date(data[data.length - 1][0]).toISOString();
-    console.log(`Fetched ${data.length} candles from ${firstTime} to ${lastTime}`);
+    //console.log(`Fetched ${data.length} candles from ${firstTime} to ${lastTime}`);
   } else {
-    console.log("No data returned from Binance.");
+    //console.log("No data returned from Binance.");
   }
   return data.map(c => ({
     x: c[0]+IST_OFFSET,
@@ -41,18 +41,7 @@ if (data.length > 0) {
 };
 
 
-/*
-const fetchKlines = async (symbol = 'BTCUSDT', interval = '1m', limit = 500, startTime) => {
-  const params = new URLSearchParams({ symbol, interval, limit: limit.toString() });
-  if (startTime) params.append('startTime', startTime.toString());
-  const res = await fetch(`https://api.binance.com/api/v3/klines?${params}`);
-  const data = await res.json();
-  return data.map(c => ({
-    x: c[0]+IST_OFFSET,
-    y: [+c[1], +c[2], +c[3], +c[4]], // OHLC
-  }));
-};
-*/
+
 const ema = (arr, period) => {
   if (arr.length < period) return [];
   const k = 2 / (period + 1);
@@ -94,7 +83,6 @@ const EMAChart = () => {
           }
         }, true); // The second argument forces a redraw
       }
-      //const data = await fetchKlines(symbol, interval, 1000, Date.now() - 24 * 60 * 60 * 1000);
       setCandles(data);
       const closes = data.map(c => c.y[3]); // Close prices
 
@@ -109,7 +97,6 @@ const EMAChart = () => {
           short[i] !== null &&
           long[i] !== null
         ) {
-          // Cross from below → BUY
           if (short[i - 1] < long[i - 1] && short[i] > long[i]) {
             s.push({
               x: data[i].x,
@@ -119,7 +106,6 @@ const EMAChart = () => {
               text: 'BUY',
             });
           }
-          // Cross from above → SELL
           else if (short[i - 1] > long[i - 1] && short[i] < long[i]) {
             s.push({
               x: data[i].x,

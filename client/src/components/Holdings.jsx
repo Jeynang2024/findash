@@ -5,12 +5,13 @@ import axios from 'axios'; // Import your custom styles
 const HoldingsChart = ({ onBalancesUpdate }) => {
   const [balances, setBalances] = useState([]);
 const token = localStorage.getItem('token');
+const BE = import.meta.env.VITE_BE;
 
 
   useEffect(() => {
     const fetchBalances = async () => {
       try {
-        const res = await axios.get('http://localhost:5001/account', {
+        const res = await axios.get(`${BE}/account`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -42,7 +43,7 @@ console.error('Full error details:', {
     data: error.response?.data,
     headers: error.config?.headers,
     url: error.config?.url
-  });        // You might want to set some error state here
+  });       
         return [];
       }
     };
@@ -81,11 +82,9 @@ console.error('Full error details:', {
       speed: 800
     }
   },
-  // ... rest of your existing options
   theme: {
-    mode: 'dark' // This is crucial for the toolbar
+    mode: 'dark' 
   },
-  // Add these styles for the toolbar
   colors: ['rgba(149, 72, 188, 0.8)'],
   stroke: {
     colors: ['#0F172A']

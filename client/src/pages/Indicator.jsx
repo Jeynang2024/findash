@@ -24,9 +24,7 @@ const [totalBalance, setTotalBalance] = useState(0);
 const [balances, setBalances] = useState([]);
 const [profit ,setProfit]=useState([0]);
 const BE = import.meta.env.VITE_BE;
-console.log('Backend URL:', BE);
 
-    //const BE = "http://localhost:5001";
 const handleBalancesUpdate = useCallback((fetchedBalances) => {
     setBalances(fetchedBalances);
     const usdtBalance = fetchedBalances.find(b => b.asset === 'USDT');
@@ -48,7 +46,7 @@ const handleBalancesUpdate = useCallback((fetchedBalances) => {
     if (!checkAuth()) return;
   const fetchProfit = async () => {
 const token=localStorage.getItem("token");
-console.log('Token: here', token);
+//console.log('Token: here', token);
     if(!token){
       navigate("/login", { replace: true });
       return;
@@ -63,7 +61,6 @@ console.log('Token: here', token);
               setProfit(data.profit)
     } catch (error) {
       console.error('Error fetching profit:', error)
-      // Optionally, set an error state here
       if (error.response?.status === 401) {
           navigate("/login", { replace: true });
         }
@@ -74,7 +71,6 @@ console.log('Token: here', token);
 }, [BE, checkAuth, navigate]);
 
 
-  // Format balance with commas
   const formatBalance = (balance) => {
     return balance.toLocaleString('en-US', {
       minimumFractionDigits: 2,
@@ -87,7 +83,6 @@ console.log('Token: here', token);
         <div className="min-h-screen gradient-border text-white flex">
 
       <div className="flex-1 overflow-x-hidden">
-        {/* Header with toggle button */}
         <div                 style={{ backgroundColor: '#1e1b2e	' }} 
 
         className=" p-4 flex items-center justify-between ">
@@ -97,25 +92,13 @@ console.log('Token: here', token);
         </div>
 
         <div className="p-6 ">
-          {/*
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-             <div className="bg-gray-800 rounded-xl p-4">
-    <p className="text-sm text-gray-400">Account Balance</p>
-    <h2 className="text-xl font-semibold">
-      {totalBalance > 0 ? `$${formatBalance(totalBalance)}` : 'Loading...'}
-    </h2>
-  </div>
-           
-          </div>*/}
-
-          {/* Charts */}
+         
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div                 style={{ backgroundColor: '#1e1b2e	' }} 
 
             className=" lg:col-span-2 p-4 rounded-xl overflow-hidden">
               <Chartboard/>
-            { /* <h3 className="mb-4 font-semibold">Unique Visitors</h3>
-              <Chart options={lineOptions} series={lineSeries} type="area" height={300} />*/}
+            
             </div>
 
             <div                 style={{ backgroundColor: '#1e1b2e	' }} 
@@ -138,43 +121,15 @@ console.log('Token: here', token);
                 </h2>
                 </div>
               <Lashboard/>
-             {/* <h3 className="mb-4 font-semibold">This Week Statistics</h3>
-              <Chart options={barOptions} series={barSeries} type="bar" height={300} />*/}
+   
             </div>
           </div>
 
-          {/* Table */}
           <div                 style={{ backgroundColor: '#1e1b2e	' }} 
 className="mt-3  p-4 rounded-xl overflow-x-auto">
           <HoldingsChart onBalancesUpdate={handleBalancesUpdate} />
 
-            {/*<h3 className="font-semibold mb-3">Recent Orders</h3>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-400">
-                  <th className="p-2">Tracking No</th>
-                  <th className="p-2">Product Name</th>
-                  <th className="p-2">Total Order</th>
-                  <th className="p-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['1258963', 'Keyboard', 36, 'Rejected'],
-                  ['1258698', 'Computer Accessories', 106, 'Approved'],
-                  ['5454584', 'Camera Lens', 40, 'Rejected'],
-                ].map(([id, name, count, status], idx) => (
-                  <tr key={idx} className="border-t border-gray-700">
-                    <td className="p-2">{id}</td>
-                    <td className="p-2">{name}</td>
-                    <td className="p-2">{count}</td>
-                    <td className={`p-2 ${status === 'Approved' ? 'text-green-400' : 'text-red-400'}`}>
-                      {status}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>*/}
+           
 
 
           </div>
